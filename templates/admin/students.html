@@ -1,0 +1,57 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Manage Students{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>👥 Student Management</h2>
+    <p>Manage all registered students in the system</p>
+</div>
+
+<div class="card">
+    {% if students %}
+    <div style="overflow-x: auto;">
+        <table>
+            <thead>
+                <tr>
+                    <th>Student ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Faculty</th>
+                    <th>Major</th>
+                    <th>Enrollment Year</th>
+                    <th>Registered Courses</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                <tr>
+                    <td><strong>{{ student.student_id }}</strong></td>
+                    <td>{{ student.first_name }} {{ student.last_name }}</td>
+                    <td>{{ student.email }}</td>
+                    <td>{{ student.faculty_code }}</td>
+                    <td>{{ student.major }}</td>
+                    <td>{{ student.enrollment_year }}</td>
+                    <td style="text-align: center;">{{ student.registered_courses }}</td>
+                    <td>
+                        <a href="{{ url_for('delete_student', student_id=student.id) }}" 
+                           class="btn danger" 
+                           onclick="return confirm('Are you sure you want to delete {{ student.first_name }} {{ student.last_name }}? This action cannot be undone.')">
+                            Delete
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div style="text-align: center; padding: 40px; color: #718096;">
+        <div style="font-size: 4rem; margin-bottom: 20px;">👥</div>
+        <h3>No Students Found</h3>
+        <p>No students have registered yet.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

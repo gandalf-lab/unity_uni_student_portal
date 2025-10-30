@@ -1,0 +1,45 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>📊 Admin Dashboard</h2>
+    <p>Welcome to the University Administration Panel</p>
+</div>
+
+<div class="dashboard-cards">
+    <div class="dashboard-card">
+        <h3>👥 Total Students</h3>
+        <div style="font-size: 3rem; font-weight: bold; color: #667eea;">{{ stats.total_students }}</div>
+        <a href="{{ url_for('admin_students') }}" class="btn">Manage Students</a>
+    </div>
+    
+    <div class="dashboard-card">
+        <h3>📚 Total Courses</h3>
+        <div style="font-size: 3rem; font-weight: bold; color: #667eea;">{{ stats.total_courses }}</div>
+        <a href="{{ url_for('admin_courses') }}" class="btn">Manage Courses</a>
+    </div>
+    
+    <div class="dashboard-card">
+        <h3>📢 Announcements</h3>
+        <div style="font-size: 3rem; font-weight: bold; color: #667eea;">{{ stats.total_announcements }}</div>
+        <a href="{{ url_for('admin_announcements') }}" class="btn">Manage Announcements</a>
+    </div>
+    
+    <div class="dashboard-card">
+        <h3>🎓 Registrations</h3>
+        <div style="font-size: 3rem; font-weight: bold; color: #667eea;">{{ stats.total_registrations }}</div>
+        <a href="{{ url_for('admin_grades') }}" class="btn">View Grades</a>
+    </div>
+</div>
+
+<div class="card">
+    <h3>🚀 Quick Actions</h3>
+    <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 20px;">
+        <a href="{{ url_for('create_announcement') }}" class="btn">➕ Create Announcement</a>
+        <a href="{{ url_for('admin_students') }}" class="btn secondary">👥 View All Students</a>
+        <a href="{{ url_for('admin_courses') }}" class="btn secondary">📚 Manage Courses</a>
+    </div>
+</div>
+{% endblock %}

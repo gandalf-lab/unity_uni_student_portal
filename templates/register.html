@@ -1,0 +1,189 @@
+
+{% extends "base.html" %}
+
+{% block title %}Register - Student Portal{% endblock %}
+
+{% block content %}
+<div style="max-width: 500px; margin: 0 auto;">
+    <div class="card">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <div style="font-size: 4rem; margin-bottom: 10px;">🚀</div>
+            <h2>Create Account</h2>
+            <p style="color: #718096;">Join our student community</p>
+        </div>
+
+        <form method="POST">
+            <div class="form-group">
+                <label>🎓 Faculty</label>
+
+                <select name="faculty_code" required>
+                    <option value="">Select Faculty</option>
+                    <option value="FCIT">Faculty of Computer & Information Technology</option>
+                    <option value="FBBA">Faculty of Business & Business Administration</option>
+                    <option value="FENG">Faculty of Engineering</option>
+                    <option value="FMED">Faculty of Medicine</option>
+                    <option value="FSCI">Faculty of Science</option>
+                    <option value="FART">Faculty of Arts</option>
+                    <option value="FLAW">Faculty of Law</option>
+                    <option value="FEDU">Faculty of Education</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>⏰ Session</label>
+                <select name="session_type" required>
+                    <option value="">Select Session</option>
+                    <option value="M">Morning (M)</option>
+                    <option value="A">Afternoon (A)</option>
+                    <option value="E">Evening (E)</option>
+                    <option value="W">Weekend (W)</option>
+                </select>
+            </div>
+            
+
+            <div class="form-group">
+                <label>👤 First Name</label>
+                <input type="text" name="first_name" placeholder="Enter your first name" required>
+            </div>
+            
+            <div class="form-group">
+                <label>👤 Last Name</label>
+                <input type="text" name="last_name" placeholder="Enter your last name" required>
+            </div>
+            
+            <div class="form-group">
+                <label>📧 Email Address</label>
+                <input type="email" name="email" placeholder="Enter your email" required>
+            </div>
+            
+            <div class="form-group">
+
+                <label>🔒 Password</label>
+                <input type="password" name="password" placeholder="Create a password (min 6 characters)" required>
+            </div>
+            
+            <div class="form-group">
+                <label>✅ Confirm Password</label>
+                <input type="password" name="confirm_password" placeholder="Confirm your password" required>
+            </div>
+            
+            
+<div class="form-group">
+    <label>🎯 Major/Program</label>
+    <select name="major" required>
+        <option value="">Select Your Major</option>
+        
+        <!-- Computer & IT Majors -->
+        <optgroup label="Computer & Information Technology">
+            <option value="Computer Science">Computer Science</option>
+            <option value="Information Technology">Information Technology</option>
+            <option value="Software Engineering">Software Engineering</option>
+            <option value="Cybersecurity">Cybersecurity</option>
+            <option value="Data Science">Data 
+
+Science</option>
+            <option value="Artificial Intelligence">Artificial Intelligence</option>
+            <option value="Computer Engineering">Computer Engineering</option>
+            <option value="Network Engineering">Network Engineering</option>
+        </optgroup>
+        
+        <!-- Business Majors -->
+        <optgroup label="Business & Administration">
+            <option value="Business Administration">Business Administration</option>
+            <option value="Accounting">Accounting</option>
+            <option value="Finance">Finance</
+
+option>
+            <option value="Marketing">Marketing</option>
+            <option value="Human Resources">Human Resources</option>
+            <option value="International Business">International Business</option>
+            <option value="Management">Management</option>
+            <option value="Entrepreneurship">Entrepreneurship</option>
+        </optgroup>
+        
+        <!-- Engineering Majors -->
+        <optgroup label="Engineering">
+            <option value="Electrical Engineering">Electrical Engineering</option>
+            <option value="Mechanical 
+
+Engineering">Mechanical Engineering</option>
+            <option value="Civil Engineering">Civil Engineering</option>
+            <option value="Chemical Engineering">Chemical Engineering</option>
+            <option value="Industrial Engineering">Industrial Engineering</option>
+            <option value="Biomedical Engineering">Biomedical Engineering</option>
+        </optgroup>
+        
+        <!-- Science Majors -->
+        <optgroup label="Science">
+            <option value="Biology">Biology</option>
+            <option value="Chemistry">Chemistry</option>
+
+            <option value="Physics">Physics</option>
+            <option value="Mathematics">Mathematics</option>
+            <option value="Environmental Science">Environmental Science</option>
+            <option value="Biotechnology">Biotechnology</option>
+        </optgroup>
+        
+        <!-- Medicine & Health -->
+        <optgroup label="Medicine & Health">
+            <option value="Medicine">Medicine</option>
+            <option value="Nursing">Nursing</option>
+            <option value="Pharmacy">Pharmacy</option>
+            <option 
+
+value="Dentistry">Dentistry</option>
+            <option value="Public Health">Public Health</option>
+        </optgroup>
+        
+        <!-- Arts & Humanities -->
+        <optgroup label="Arts & Humanities">
+            <option value="Psychology">Psychology</option>
+            <option value="Sociology">Sociology</option>
+            <option value="English Literature">English Literature</option>
+            <option value="History">History</option>
+            <option value="Political Science">Political Science</option>
+            <option value="International Relations">International Relations</option>
+        </optgroup>
+        
+
+        <!-- Law & Education -->
+        <optgroup label="Law & Education">
+            <option value="Law">Law</option>
+            <option value="Criminal Justice">Criminal Justice</option>
+            <option value="Education">Education</option>
+            <option value="Early Childhood Education">Early Childhood Education</option>
+        </optgroup>
+    </select>
+</div>
+
+
+            
+            <div class="form-group">
+                <label>📅 Enrollment Year</label>
+                <input type="number" name="enrollment_year" placeholder="2024" min="2000" max="2030">
+            </div>
+            
+            <button type="submit" class="btn" style="width: 100%;">Create Account</button>
+        </form>
+        
+        <div style="text-align: center; margin-top: 25px; padding-top: 25px; border-top: 1px solid #e2e8f0;">
+            <p style="color: #718096;">Already have an account? 
+                <a href="{{ url_for('login') }}" style="color: #667eea; text-decoration: 
+
+none; font-weight: bold;">
+                    Sign In
+                </a>
+            </p>
+        </div>
+
+        <div style="margin-top: 20px; padding: 15px; background: #f7fafc; border-radius: 10px;">
+            <h4 style="margin-bottom: 10px; color: #4a5568;">📝 Student ID Information</h4>
+            <p style="color: #718096; font-size: 0.9rem; margin: 0;">
+                Your Student ID will be automatically generated in the format: <strong>FACULTY/SESSION/NUMBER</strong><br>
+                Example: <code>FCIT/M/001</code> for Faculty of Computer & IT, Morning session
+
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

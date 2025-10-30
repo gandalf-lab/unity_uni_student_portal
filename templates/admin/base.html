@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Admin Panel{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <!-- Admin Header -->
+        <div class="nav">
+            <!-- In templates/admin/base.html, update nav-links -->
+            <div class="nav-links">
+                <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+                <a href="{{ url_for('admin_students') }}">Students</a>
+                <a href="{{ url_for('admin_courses') }}">Courses</a>
+                <a href="{{ url_for('admin_announcements') }}">Announcements</a>
+                <a href="{{ url_for('admin_grades') }}">Grades</a>
+                <a href="{{ url_for('assign_grade') }}">Assign Grade</a>  <!-- Add this line -->
+            </div>
+            <div class="nav-user">
+                <span style="color: #4a5568; margin-right: 15px;">Admin: {{ session.get('admin_name', 'Admin') }}</span>
+                <a href="{{ url_for('admin_logout') }}" class="btn danger">Logout</a>
+            </div>
+        </div>
+
+        <!-- Messages -->
+        <div class="messages">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        <!-- Admin Content -->
+        {% block content %}{% endblock %}
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

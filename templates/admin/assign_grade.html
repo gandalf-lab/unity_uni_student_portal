@@ -1,0 +1,77 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Assign Grade{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>📝 Assign Grade to Student</h2>
+    <p>Assign or update grades for students</p>
+</div>
+
+<div class="card">
+    <form method="POST">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div class="form-group">
+                <label>Select Student</label>
+                <select name="student_id" required>
+                    <option value="">Choose a student</option>
+                    {% for student in students %}
+                    <option value="{{ student.id }}">{{ student.student_id }} - {{ student.first_name }} {{ student.last_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Select Course</label>
+                <select name="course_id" required>
+                    <option value="">Choose a course</option>
+                    {% for course in courses %}
+                    <option value="{{ course.id }}">{{ course.course_code }} - {{ course.course_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 15px;">
+            <div class="form-group">
+                <label>Grade</label>
+                <select name="grade" required>
+                    <option value="">Select Grade</option>
+                    <option value="A">A (90-100%)</option>
+                    <option value="A-">A- (85-89%)</option>
+                    <option value="B+">B+ (80-84%)</option>
+                    <option value="B">B (75-79%)</option>
+                    <option value="B-">B- (70-74%)</option>
+                    <option value="C+">C+ (65-69%)</option>
+                    <option value="C">C (60-64%)</option>
+                    <option value="C-">C- (55-59%)</option>
+                    <option value="D+">D+ (50-54%)</option>
+                    <option value="D">D (45-49%)</option>
+                    <option value="F">F (Below 45%)</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Semester</label>
+                <select name="semester" required>
+                    <option value="">Select Semester</option>
+                    <option value="Fall">Fall</option>
+                    <option value="Spring">Spring</option>
+                    <option value="Summer">Summer</option>
+                    <option value="Winter">Winter</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Academic Year</label>
+                <input type="text" name="academic_year" placeholder="e.g., 2024" required>
+            </div>
+        </div>
+        
+        <div style="display: flex; gap: 15px; margin-top: 25px;">
+            <button type="submit" class="btn">🎓 Assign Grade</button>
+            <a href="{{ url_for('admin_grades') }}" class="btn secondary">← Back to Grades</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,42 @@
+
+{% extends "base.html" %}
+
+{% block title %}Announcements - Student Portal{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>University Announcements</h2>
+    
+    {% if announcements %}
+    <div class="announcements-container">
+        {% for announcement in announcements %}
+        <div class="announcement {% if announcement.is_important %}announcement-important{% else %}announcement-normal{% endif %}">
+            <div class="announcement-header">
+                <div class="announcement-content">
+                    <h3 class="announcement-title">
+                        {% if announcement.is_important %}📢 {% endif %}{{ announcement.title }}
+                    </h3>
+                    <div class="announcement-meta">
+                        <span class="announcement-author">By: {{ announcement.author }}</span>
+                        <span class="announcement-date">• {{ announcement.created_at.strftime('%B %d, %Y') }}</span>
+                    </div>
+                    <p class="announcement-text">{{ announcement.content }}</p>
+                </div>
+                {% if announcement.is_important %}
+                <div class="importance-indicator">
+                    <span class="importance-badge">Important</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="no-announcements">
+        <div class="no-announcements-icon">📣</div>
+        <h3>No announcements at this time</h3>
+        <p>Check back later for updates from the university.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

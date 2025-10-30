@@ -1,0 +1,50 @@
+
+{% extends "base.html" %}
+
+{% block title %}Login - Student Portal{% endblock %}
+
+{% block content %}
+<div style="max-width: 400px; margin: 0 auto;">
+    <div class="card">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <div style="font-size: 4rem; margin-bottom: 10px;">🎓</div>
+            <h2>Student Login</h2>
+            <p style="color: #718096;">Sign in with your Student ID</p>
+        </div>
+
+        <form method="POST">
+            <div class="form-group">
+                <label>🎫 Student ID</label>
+
+                <input type="text" name="student_id" placeholder="Enter your Student ID (e.g., FCIT/M/001)" required>
+            </div>
+            
+            <div class="form-group">
+                <label>🔒 Password</label>
+                <input type="password" name="password" placeholder="Enter your password" required>
+            </div>
+            
+            <button type="submit" class="btn" style="width: 100%;">Sign In</button>
+        </form>
+        
+        <div style="text-align: center; margin-top: 25px; padding-top: 25px; border-top: 1px solid #e2e8f0;">
+            <p style="color: #718096;">Don't 
+
+have an account? 
+                <a href="{{ url_for('register') }}" style="color: #667eea; text-decoration: none; font-weight: bold;">
+                    Register Here
+                </a>
+            </p>
+        </div>
+
+        <div style="margin-top: 20px; padding: 15px; background: #f7fafc; border-radius: 10px;">
+            <h4 style="margin-bottom: 10px; color: #4a5568;">ℹ️ Login Help</h4>
+            <p style="color: #718096; font-size: 0.9rem; margin: 0;">
+                Use your <strong>Student ID</strong> (e.g., FCIT/M/001) to login.<br>
+                Your Student ID was provided during registration.
+            </p>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

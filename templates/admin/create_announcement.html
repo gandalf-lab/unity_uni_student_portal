@@ -1,0 +1,44 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Create Announcement{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>📢 Create New Announcement</h2>
+    <p>Post a new announcement to all students</p>
+</div>
+
+<div class="card">
+    <form method="POST">
+        <div class="form-group">
+            <label>Announcement Title</label>
+            <input type="text" name="title" placeholder="Enter announcement title" required>
+        </div>
+        
+        <div class="form-group">
+            <label>Author Name</label>
+            <input type="text" name="author" value="{{ session.get('admin_name', 'University Administration') }}" required>
+        </div>
+        
+        <div class="form-group">
+            <label>Announcement Content</label>
+            <textarea name="content" rows="6" placeholder="Enter announcement content..." style="width: 100%; padding: 12px 16px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 16px; font-family: inherit;" required></textarea>
+        </div>
+        
+        <div class="form-group">
+            <label style="display: flex; align-items: center; gap: 10px;">
+                <input type="checkbox" name="is_important" value="true">
+                <span style="font-weight: 600;">Mark as Important Announcement</span>
+            </label>
+            <small style="color: #718096; display: block; margin-top: 5px;">
+                Important announcements will be highlighted with a red border and badge.
+            </small>
+        </div>
+        
+        <div style="display: flex; gap: 15px; margin-top: 25px;">
+            <button type="submit" class="btn">📢 Publish Announcement</button>
+            <a href="{{ url_for('admin_announcements') }}" class="btn secondary">← Back to Announcements</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

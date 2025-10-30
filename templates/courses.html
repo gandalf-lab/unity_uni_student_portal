@@ -1,0 +1,149 @@
+
+{% extends "base.html" %}
+
+{% block title %}Course Registration - Student Portal{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>My Registered Courses</h2>
+    {% if my_courses %}
+        <div class="courses-grid">
+            {% for course in my_courses %}
+            <div class="course">
+                <div class="course-header">
+                    <div class="course-info">
+                        <h3>{{ course.course_code }} - {{ course.course_name }}</h3>
+                        <p>Instructor: {{ course.instructor }}</p>
+                        <p>Schedule: {{ course.schedule_days }}, {{ course.schedule_time }}</p>
+
+                        <p>Credits: {{ course.credits }}</p>
+                        <p class="status-registered">Status: Registered</p>
+                    </div>
+                    <a href="/drop_course/{{ course.id }}" class="btn danger drop-course">Drop Course</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="no-courses">
+            <h3>No courses registered yet</h3>
+            <p>Select a course from the dropdown below to register.</p>
+        </div>
+    {% endif %}
+</div>
+
+<div class="card">
+    <h2>Register New Course</h2>
+    
+    <div class="course-selection">
+        <label>Select Course to Register:</label>
+        <select id="courseSelect">
+            <option value="">Choose a course</option>
+            {% for course in all_courses %}
+                {% if course.current_enrollment < course.max_capacity %}
+                <option value="{{ course.id }}" 
+                        data-code="{{ course.course_code }}"
+                        data-name="{{ course.course_name }}"
+                        data-instructor="{{ course.instructor }}"
+                        data-schedule="{{ course.schedule_days }}, {{ 
+
+course.schedule_time }}"
+                        data-credits="{{ course.credits }}"
+                        data-enrollment="{{ course.current_enrollment }}/{{ course.max_capacity }}">
+                    {{ course.course_code }} - {{ course.course_name }} ({{ course.schedule_days }}, {{ course.schedule_time }})
+                </option>
+                {% else %}
+                <option value="{{ course.id }}" disabled class="course-full-option">
+                    {{ course.course_code }} - {{ course.course_name }} - COURSE FULL
+                </option>
+                {% endif %}
+            {% endfor %}
+        </select>
+        
+
+        <div id="courseDetails" class="course-details">
+            <h4>Course Details:</h4>
+            <p>Course Code: <span id="detailCode">-</span></p>
+            <p>Course Name: <span id="detailName">-</span></p>
+            <p>Instructor: <span id="detailInstructor">-</span></p>
+            <p>Schedule: <span id="detailSchedule">-</span></p>
+            <p>Credits: <span id="detailCredits">-</span></p>
+            <p>Enrollment: <span id="detailEnrollment">-</span></p>
+            
+            <button id="registerBtn" class="btn register-button">
+                Register for this Course
+            </button>
+        </div>
+
+    </div>
+
+    <div class="all-courses-section">
+        <h3>All Available Courses</h3>
+        <div class="courses-list">
+            {% for course in all_courses %}
+            <div class="course-display {% if course.current_enrollment >= course.max_capacity %}course-full-display{% endif %}">
+                <h4>{{ course.course_code }} - {{ course.course_name }}</h4>
+                <p>Instructor: {{ course.instructor }}</p>
+                <p>Schedule: {{ course.schedule_days }}, {{ course.schedule_time }}</p>
+                <p>Credits: {{ course.credits }}</p>
+                <p>Enrollment: {{ course.current_enrollment }}/{{ 
+
+course.max_capacity }}</p>
+                {% if course.current_enrollment >= course.max_capacity %}
+                    <p class="full-label">Course Full</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const courseSelect = document.getElementById('courseSelect');
+    const courseDetails = document.getElementById('courseDetails');
+    const registerBtn = document.getElementById('registerBtn');
+
+    
+    courseSelect.addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
+        
+        if (this.value && !selectedOption.disabled) {
+            document.getElementById('detailCode').textContent = selectedOption.getAttribute('data-code');
+            document.getElementById('detailName').textContent = selectedOption.getAttribute('data-name');
+            document.getElementById('detailInstructor').textContent = selectedOption.getAttribute('data-instructor');
+
+            document.getElementById('detailSchedule').textContent = selectedOption.getAttribute('data-schedule');
+            document.getElementById('detailCredits').textContent = selectedOption.getAttribute('data-credits');
+            document.getElementById('detailEnrollment').textContent = selectedOption.getAttribute('data-enrollment');
+            
+            registerBtn.style.display = 'block';
+            courseDetails.style.display = 'block';
+        } else {
+            courseDetails.style.display = 'none';
+            registerBtn.style.display = 'none';
+        }
+
+    });
+    
+    registerBtn.addEventListener('click', function() {
+        const courseId = courseSelect.value;
+        const courseName = courseSelect.options[courseSelect.selectedIndex].getAttribute('data-name');
+        
+        if (confirm('Are you sure you want to register for: ' + courseName + '?')) {
+            window.location.href = '/register_course/' + courseId;
+        }
+    });
+    
+    const dropLinks = document.querySelectorAll('.drop-course');
+    dropLinks.forEach(function(link) {
+        link.addEventListener('click', function(e) {
+
+            if (!confirm('Are you sure you want to drop this course?')) {
+                e.preventDefault();
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

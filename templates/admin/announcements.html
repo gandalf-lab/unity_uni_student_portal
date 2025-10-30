@@ -1,0 +1,63 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Manage Announcements{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>📢 Announcement Management</h2>
+    <p>Create and manage university announcements</p>
+    <div style="margin-top: 15px;">
+        <a href="{{ url_for('create_announcement') }}" class="btn">➕ Create New Announcement</a>
+    </div>
+</div>
+
+<div class="card">
+    {% if announcements %}
+    <div style="overflow-x: auto;">
+        <table>
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Content</th>
+                    <th>Important</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for announcement in announcements %}
+                <tr>
+                    <td><strong>{{ announcement.title }}</strong></td>
+                    <td>{{ announcement.author }}</td>
+                    <td>{{ announcement.content[:50] }}{% if announcement.content|length > 50 %}...{% endif %}</td>
+                    <td>
+                        {% if announcement.is_important %}
+                            <span style="color: #e53e3e; font-weight: bold;">Yes</span>
+                        {% else %}
+                            <span style="color: #718096;">No</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ announcement.created_at.strftime('%Y-%m-%d') }}</td>
+                    <td>
+                        <a href="{{ url_for('delete_announcement', announcement_id=announcement.id) }}" 
+                           class="btn danger" 
+                           onclick="return confirm('Are you sure you want to delete this announcement?')">
+                            Delete
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div style="text-align: center; padding: 40px; color: #718096;">
+        <div style="font-size: 4rem; margin-bottom: 20px;">📢</div>
+        <h3>No Announcements</h3>
+        <p>No announcements have been created yet.</p>
+        <a href="{{ url_for('create_announcement') }}" class="btn">Create First Announcement</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

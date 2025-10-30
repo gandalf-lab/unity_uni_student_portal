@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{% block title %}Help Desk - Student Portal{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>🤖 Help Desk Chatbot</h2>
+    <p>Get instant help with common questions about the student portal</p>
+</div>
+
+<div class="card">
+    <div class="chat-container" style="height: 500px; border: 2px solid #e2e8f0; border-radius: 15px; display: flex; flex-direction: column;">
+        <!-- Chat Messages -->
+        <div id="chat-messages" style="flex: 1; padding: 20px; overflow-y: auto; background: #f7fafc;">
+            <div class="bot-message" style="background: white; padding: 15px; border-radius: 15px; margin-bottom: 15px; max-width: 80%;">
+                <strong>HelpBot:</strong> Hello! I'm here to help you with the student portal. You can ask me about grades, courses, registration, or contact information. How can I assist you today?
+            </div>
+        </div>
+        
+        <!-- Chat Input -->
+        <div style="padding: 20px; border-top: 1px solid #e2e8f0; background: white;">
+            <div style="display: flex; gap: 10px;">
+                <input type="text" id="user-input" placeholder="Type your question here..." 
+                       style="flex: 1; padding: 12px 16px; border: 2px solid #e2e8f0; border-radius: 25px; font-size: 16px;"
+                       onkeypress="if(event.keyCode==13) sendMessage()">
+                <button onclick="sendMessage()" class="btn" style="border-radius: 25px; padding: 12px 25px;">
+                    Send
+                </button>
+            </div>
+            <div style="margin-top: 10px; font-size: 0.9rem; color: #718096;">
+                Try: "grades", "courses", "contact", "office hours"
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <h3>💡 Quick Help Topics</h3>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 20px;">
+        <div class="quick-topic" onclick="quickQuestion('How do I check my grades?')" style="padding: 15px; background: #f7fafc; border-radius: 10px; cursor: pointer; transition: all 0.3s ease;">
+            <strong>📊 Grades</strong>
+            <p style="margin: 5px 0 0 0; color: #718096; font-size: 0.9rem;">View your academic performance</p>
+        </div>
+        <div class="quick-topic" onclick="quickQuestion('Course registration')" style="padding: 15px; background: #f7fafc; border-radius: 10px; cursor: pointer; transition: all 0.3s ease;">
+            <strong>📚 Courses</strong>
+            <p style="margin: 5px 0 0 0; color: #718096; font-size: 0.9rem;">Register or drop courses</p>
+        </div>
+        <div class="quick-topic" onclick="quickQuestion('Contact information')" style="padding: 15px; background: #f7fafc; border-radius: 10px; cursor: pointer; transition: all 0.3s ease;">
+            <strong>📞 Contact</strong>
+            <p style="margin: 5px 0 0 0; color: #718096; font-size: 0.9rem;">Get university contacts</p>
+        </div>
+        <div class="quick-topic" onclick="quickQuestion('Office hours')" style="padding: 15px; background: #f7fafc; border-radius: 10px; cursor: pointer; transition: all 0.3s ease;">
+            <strong>🕒 Hours</strong>
+            <p style="margin: 5px 0 0 0; color: #718096; font-size: 0.9rem;">University office hours</p>
+        </div>
+    </div>
+</div>
+
+<script>
+function addMessage(message, isUser = false) {
+    const chatMessages = document.getElementById('chat-messages');
+    const messageDiv = document.createElement('div');
+    
+    if (isUser) {
+        messageDiv.innerHTML = '<strong>You:</strong> ' + message;
+        messageDiv.style.background = '#667eea';
+        messageDiv.style.color = 'white';
+        messageDiv.style.marginLeft = '20%';
+    } else {
+        messageDiv.innerHTML = '<strong>HelpBot:</strong> ' + message.replace(/\n/g, '<br>');
+        messageDiv.style.background = 'white';
+        messageDiv.style.marginRight = '20%';
+    }
+    
+    messageDiv.style.padding = '15px';
+    messageDiv.style.borderRadius = '15px';
+    messageDiv.style.marginBottom = '15px';
+    messageDiv.style.maxWidth = '80%';
+    messageDiv.style.whiteSpace = 'pre-line';
+    
+    chatMessages.appendChild(messageDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+async function sendMessage() {
+    const userInput = document.getElementById('user-input');
+    const message = userInput.value.trim();
+    
+    if (!message) return;
+    
+    // Add user message
+    addMessage(message, true);
+    userInput.value = '';
+    
+    // Get bot response
+    try {
+        const response = await fetch('/chatbot_response', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ message: message })
+        });
+        
+        const data = await response.json();
+        addMessage(data.response);
+    } catch (error) {
+        addMessage('Sorry, I encountered an error. Please try again.');
+    }
+}
+
+function quickQuestion(question) {
+    document.getElementById('user-input').value = question;
+    sendMessage();
+}
+
+// Enter key support
+document.getElementById('user-input').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        sendMessage();
+    }
+});
+</script>
+
+<style>
+.quick-topic:hover {
+    background: #667eea !important;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.quick-topic:hover p {
+    color: white !important;
+}
+
+.chat-container {
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+}
+</style>
+{% endblock %}
