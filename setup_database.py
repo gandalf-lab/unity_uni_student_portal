@@ -126,5 +126,5 @@ def setup_database():
             cursor.close()
             connection.close()
 
-if __name__ == "__main__":
+if _name_ == "_main_":
     setup_database()
