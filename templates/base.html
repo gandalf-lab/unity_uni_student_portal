@@ -14,22 +14,32 @@
 <body>
 
     
-    <!-- Navigation -->
-    <div class="container">
-        <div class="nav">
-            <div class="nav-links">
-                <a href="{{ url_for('dashboard') }}">Dashboard</a>
-                <a href="{{ url_for('profile') }}">My Profile</a>
-                <a href="{{ url_for('courses') }}">Course Registration</a>
-                <a href="{{ url_for('grades') }}">Grades</a>
-                <a href="{{ url_for('announcements') }}">Announcements</a>
-                <a href=" {{ url_for('help_desk') }}" >Help Desk</a>
-            </div>
-            <div class="nav-user">
-                <span style="color: #4a5568; margin-right: 15px;">Hello, {{ session.get('student_name', 'Student') }}</span>
-                <a href="{{ url_for('logout') }}" class="btn secondary">Logout</a>
-            </div>
-        </div>
+    <div class="nav-links">
+    {% if session.get('student_id') %}
+        <!-- Show these when student is LOGGED IN -->
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('profile') }}">My Profile</a>
+        <a href="{{ url_for('courses') }}">Course Registration</a>
+        <a href="{{ url_for('grades') }}">Grades</a>
+        <a href="{{ url_for('announcements') }}">Announcements</a>
+        <a href="{{ url_for('help_desk') }}">Help Desk</a>
+    {% else %}
+        <!-- Show these when student is LOGGED OUT -->
+        <a href="{{ url_for('home') }}">Home</a>
+        <a href="{{ url_for('login') }}">Login</a>
+        <a href="{{ url_for('register') }}">Register</a>
+    {% endif %}
+</div>
+
+<div class="nav-user">
+    {% if session.get('student_id') %}
+        <span style="color: #4a5568; margin-right: 15px;">Hello, {{ session.get('student_name', 'Student') }}</span>
+        <a href="{{ url_for('logout') }}" class="btn secondary">Logout</a>
+    {% else %}
+        <span style="color: #4a5568; margin-right: 15px;">Welcome, Guest</span>
+        <a href="{{ url_for('login') }}" class="btn">Login</a>
+    {% endif %}
+</div>
 
         <!-- Messages -->
         <div class="messages">
@@ -51,4 +61,5 @@
     
     {% block scripts %}{% endblock %}
 </body>
+
 </html>
