@@ -5,6 +5,7 @@ import bcrypt
 import os
 import random
 from functools import wraps
+from urllib.parse import urlparse
 
 app = Flask(__name__)
 
@@ -12,11 +13,15 @@ app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', os.urandom(24))
 
 # Database configuration from environment variables
+# Database configuration for Railway
+mysql_url = os.environ.get('MYSQL_URL')
+url_parts = urlparse(mysql_url)
 db_config = {
-    'host': os.environ.get('DB_HOST', 'localhost'),
-    'user': os.environ.get('DB_USER', 'root'),
-    'password': os.environ.get('DB_PASSWORD', '1234567890'),
-    'database': os.environ.get('DB_NAME', 'student_portal_db')
+    'host': url_parts.hostname,
+    'user': url_parts.username,
+    'password': url_parts.password,
+    'database': url_parts.path[1:],  # This removes the slash
+    'port': url_parts.port or 3306
 }
 
 def get_db_connection():
@@ -854,4 +859,5 @@ def chatbot_response():
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
+
     app.run(host='0.0.0.0', port=port, debug=False)
