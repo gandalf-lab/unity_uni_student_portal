@@ -12,36 +12,47 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
 </head>
 <body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🎓 University Student Portal</h1>
+        </div>
 
-    
-    <div class="nav-links">
-    {% if session.get('student_id') %}
-        <!-- Show these when student is LOGGED IN -->
-        <a href="{{ url_for('dashboard') }}">Dashboard</a>
-        <a href="{{ url_for('profile') }}">My Profile</a>
-        <a href="{{ url_for('courses') }}">Course Registration</a>
-        <a href="{{ url_for('grades') }}">Grades</a>
-        <a href="{{ url_for('announcements') }}">Announcements</a>
-        <a href="{{ url_for('help_desk') }}">Help Desk</a>
-    {% else %}
-        <!-- Show these when student is LOGGED OUT -->
-        <a href="{{ url_for('home') }}">Home</a>
-        <a href="{{ url_for('login') }}">Login</a>
-        <a href="{{ url_for('register') }}">Register</a>
-    {% endif %}
-</div>
+        <!-- Only show navigation if user is logged in -->
+        {% if session.get('student_id') or session.get('admin_id') %}
+        <div class="nav">
+            <div class="nav-links">
+                {% if session.get('student_id') %}
+                    <!-- Student Navigation -->
+                    <a href="{{ url_for('dashboard') }}">Dashboard</a>
+                    <a href="{{ url_for('profile') }}">My Profile</a>
+                    <a href="{{ url_for('courses') }}">Course Registration</a>
+                    <a href="{{ url_for('grades') }}">Grades</a>
+                    <a href="{{ url_for('announcements') }}">Announcements</a>
+                    <a href="{{ url_for('help_desk') }}">Help Desk</a>
+                {% elif session.get('admin_id') %}
+                    <!-- Admin Navigation -->
+                    <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+                    <a href="{{ url_for('admin_students') }}">Students</a>
+                    <a href="{{ url_for('admin_courses') }}">Courses</a>
+                    <a href="{{ url_for('admin_announcements') }}">Announcements</a>
+                    <a href="{{ url_for('admin_grades') }}">Grades</a>
+                    <a href="{{ url_for('assign_grade') }}">Assign Grade</a>
+                {% endif %}
+            </div>
+            <div class="nav-user">
+                {% if session.get('student_id') %}
+                    <span style="color: #4a5568; margin-right: 15px;">Hello, {{ session.get('student_name', 'Student') }}</span>
+                    <a href="{{ url_for('logout') }}" class="btn secondary">Logout</a>
+                {% elif session.get('admin_id') %}
+                    <span style="color: #4a5568; margin-right: 15px;">Admin: {{ session.get('admin_name', 'Admin') }}</span>
+                    <a href="{{ url_for('admin_logout') }}" class="btn danger">Logout</a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
 
-<div class="nav-user">
-    {% if session.get('student_id') %}
-        <span style="color: #4a5568; margin-right: 15px;">Hello, {{ session.get('student_name', 'Student') }}</span>
-        <a href="{{ url_for('logout') }}" class="btn secondary">Logout</a>
-    {% else %}
-        <span style="color: #4a5568; margin-right: 15px;">Welcome, Guest</span>
-        <a href="{{ url_for('login') }}" class="btn">Login</a>
-    {% endif %}
-</div>
-
-        <!-- Messages -->
+        <!-- Messages (always show messages) -->
         <div class="messages">
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
@@ -61,5 +72,4 @@
     
     {% block scripts %}{% endblock %}
 </body>
-
 </html>
