@@ -3,56 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Student Portal{% endblock %}</title>
-    
-    <!-- CSS -->
+    <title>{% block title %}Admin Panel{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    
-    <!-- Favicon -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
 </head>
 <body>
     <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <h1>🎓 University Student Portal</h1>
-        </div>
-
-        <!-- Only show navigation if user is logged in -->
-        {% if session.get('student_id') or session.get('admin_id') %}
+        <!-- Admin Header -->
         <div class="nav">
+            <!-- In templates/admin/base.html, update nav-links -->
             <div class="nav-links">
-                {% if session.get('student_id') %}
-                    <!-- Student Navigation -->
-                    <a href="{{ url_for('dashboard') }}">Dashboard</a>
-                    <a href="{{ url_for('profile') }}">My Profile</a>
-                    <a href="{{ url_for('courses') }}">Course Registration</a>
-                    <a href="{{ url_for('grades') }}">Grades</a>
-                    <a href="{{ url_for('announcements') }}">Announcements</a>
-                    <a href="{{ url_for('help_desk') }}">Help Desk</a>
-                {% elif session.get('admin_id') %}
-                    <!-- Admin Navigation -->
-                    <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
-                    <a href="{{ url_for('admin_students') }}">Students</a>
-                    <a href="{{ url_for('admin_courses') }}">Courses</a>
-                    <a href="{{ url_for('admin_announcements') }}">Announcements</a>
-                    <a href="{{ url_for('admin_grades') }}">Grades</a>
-                    <a href="{{ url_for('assign_grade') }}">Assign Grade</a>
-                {% endif %}
+                <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+                <a href="{{ url_for('admin_students') }}">Students</a>
+                <a href="{{ url_for('admin_courses') }}">Courses</a>
+                <a href="{{ url_for('admin_announcements') }}">Announcements</a>
+                <a href="{{ url_for('admin_grades') }}">Grades</a>
+                <a href="{{ url_for('assign_grade') }}">Assign Grade</a>  <!-- Add this line -->
             </div>
             <div class="nav-user">
-                {% if session.get('student_id') %}
-                    <span style="color: #4a5568; margin-right: 15px;">Hello, {{ session.get('student_name', 'Student') }}</span>
-                    <a href="{{ url_for('logout') }}" class="btn secondary">Logout</a>
-                {% elif session.get('admin_id') %}
-                    <span style="color: #4a5568; margin-right: 15px;">Admin: {{ session.get('admin_name', 'Admin') }}</span>
-                    <a href="{{ url_for('admin_logout') }}" class="btn danger">Logout</a>
-                {% endif %}
+                <span style="color: #4a5568; margin-right: 15px;">Admin: {{ session.get('admin_name', 'Admin') }}</span>
+                <a href="{{ url_for('admin_logout') }}" class="btn danger">Logout</a>
             </div>
         </div>
-        {% endif %}
 
-        <!-- Messages (always show messages) -->
+        <!-- Messages -->
         <div class="messages">
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
@@ -63,13 +36,11 @@
             {% endwith %}
         </div>
 
-        <!-- Main Content -->
+        <!-- Admin Content -->
         {% block content %}{% endblock %}
     </div>
 
-    <!-- JavaScript -->
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
-    
     {% block scripts %}{% endblock %}
 </body>
 </html>
