@@ -11,15 +11,27 @@
             Your gateway to academic excellence. Manage courses, track grades, and stay connected with campus life.
         </p>
         
-        <div class="hero-actions">
-            <a href="{{ url_for('login') }}" class="btn btn-primary btn-large">
-                <span class="btn-icon">🚀</span>
-                Student Login
-            </a>
-            <a href="{{ url_for('register') }}" class="btn btn-secondary btn-large">
-                <span class="btn-icon">📝</span>
-                Student Registration
-            </a>
+        <!-- Pyramid Button Structure -->
+        <div class="pyramid-buttons">
+            <!-- Top Row: Student Login & Registration -->
+            <div class="button-row top-row">
+                <a href="{{ url_for('login') }}" class="btn btn-primary btn-large">
+                    <span class="btn-icon">🚀</span>
+                    Student Login
+                </a>
+                <a href="{{ url_for('register') }}" class="btn btn-secondary btn-large">
+                    <span class="btn-icon">📝</span>
+                    Student Registration
+                </a>
+            </div>
+            
+            <!-- Bottom Row: Admin Login (Centered) -->
+            <div class="button-row bottom-row">
+                <a href="{{ url_for('admin_login') }}" class="btn btn-outline btn-admin">
+                    <span class="btn-icon">🔐</span>
+                    Admin Login
+                </a>
+            </div>
         </div>
     </div>
 </div>
@@ -48,19 +60,6 @@
                 <h3>AI Assistance</h3>
                 <p>Get instant help with our 24/7 chatbot for any questions about the portal</p>
             </div>
-        </div>
-    </div>
-</div>
-
-<div class="admin-access">
-    <div class="container">
-        <div class="admin-card">
-            <h3>Administrator Access</h3>
-            <p>University staff and faculty members</p>
-            <a href="{{ url_for('admin_login') }}" class="btn btn-outline">
-                <span class="btn-icon">🔐</span>
-                Admin Login
-            </a>
         </div>
     </div>
 </div>
