@@ -1,65 +1,60 @@
 {% extends "base.html" %}
 
+{% block title %}University Student Portal{% endblock %}
+
 {% block content %}
-<div class="hero-section">
-    <div class="hero-content">
-        <div class="university-logo">🎓</div>
-        <h1 class="hero-title">University Student Portal</h1>
-        <p class="hero-subtitle">
-            Your gateway to academic excellence. Manage courses, track grades, and stay connected with campus life.
-        </p>
-        
-        <!-- Pyramid Button Structure -->
-        <div class="pyramid-buttons">
-            <!-- Top Row: Student Login & Registration -->
-            <div class="button-row top-row">
-                <a href="{{ url_for('login') }}" class="btn btn-primary btn-large">
-                    <span class="btn-icon">🚀</span>
-                    Student Login
-                </a>
-                <a href="{{ url_for('register') }}" class="btn btn-secondary btn-large">
-                    <span class="btn-icon">📝</span>
-                    Student Registration
-                </a>
+<div class="minimal-hero">
+    <div class="hero-container">
+        <!-- Clean Header -->
+        <div class="logo-section">
+            <div class="main-logo">🎓</div>
+            <h1 class="main-title">University Portal</h1>
+            <p class="tagline">Academic Management System</p>
+        </div>
+
+        <!-- Simple Button Group -->
+        <div class="access-buttons">
+            <div class="student-access">
+                <h3>Student Access</h3>
+                <div class="button-group">
+                    <a href="{{ url_for('login') }}" class="access-btn primary-btn">
+                        Sign In
+                    </a>
+                    <a href="{{ url_for('register') }}" class="access-btn secondary-btn">
+                        Register
+                    </a>
+                </div>
             </div>
             
-            <!-- Bottom Row: Admin Login (Centered) -->
-            <div class="button-row bottom-row">
-                <a href="{{ url_for('admin_login') }}" class="btn btn-outline btn-admin">
-                    <span class="btn-icon">🔐</span>
-                    Admin Login
+            <div class="admin-access">
+                <h3>Administrator</h3>
+                <a href="{{ url_for('admin_login') }}" class="access-btn admin-btn">
+                    Staff Login
                 </a>
             </div>
         </div>
     </div>
 </div>
 
-<div class="features-section">
+<!-- Simple Feature Highlights -->
+<div class="simple-features">
     <div class="container">
-        <h2 class="section-title">Everything You Need for Academic Success</h2>
-        <div class="features-grid">
-            <div class="feature-card">
-                <div class="feature-icon">📚</div>
-                <h3>Course Management</h3>
-                <p>Register for classes and manage your schedule with our intuitive course system</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">🎓</div>
-                <h3>Grade Tracking</h3>
-                <p>Monitor your academic progress with detailed grade reports and analytics</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">📢</div>
-                <h3>Campus Updates</h3>
-                <p>Stay informed with real-time announcements and important university news</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">🤖</div>
-                <h3>AI Assistance</h3>
-                <p>Get instant help with our 24/7 chatbot for any questions about the portal</p>
-            </div>
+        <div class="feature-item">
+            <span class="feature-icon">📚</span>
+            <h4>Course Management</h4>
+        </div>
+        <div class="feature-item">
+            <span class="feature-icon">🎓</span>
+            <h4>Grade Tracking</h4>
+        </div>
+        <div class="feature-item">
+            <span class="feature-icon">📢</span>
+            <h4>Announcements</h4>
+        </div>
+        <div class="feature-item">
+            <span class="feature-icon">🤖</span>
+            <h4>Help Desk</h4>
         </div>
     </div>
 </div>
 {% endblock %}
-
