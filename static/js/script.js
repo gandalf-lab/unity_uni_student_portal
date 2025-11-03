@@ -1,10 +1,10 @@
-// Global JavaScript for interactive features
+js = // Global JavaScript for interactive features
 
 document.addEventListener('DOMContentLoaded', function() {
     // Add fade-in animation to all cards
     const cards = document.querySelectorAll('.card, .dashboard-card, .course');
     cards.forEach((card, index) => {
-        card.style.animationDelay = (index * 0.1) + 's';
+        card.style.animationDelay = ${index * 0.1}s;
         card.classList.add('fade-in');
     });
 
@@ -54,15 +54,15 @@ document.addEventListener('DOMContentLoaded', function() {
     // Auto-hide success messages after 5 seconds
     const successMessages = document.querySelectorAll('.alert.success');
     successMessages.forEach(message => {
-        setTimeout(function() {
+        setTimeout(() => {
             message.style.opacity = '0';
             message.style.transition = 'opacity 0.5s ease';
-            setTimeout(function() { message.remove(); }, 500);
+            setTimeout(() => message.remove(), 500);
         }, 5000);
     });
 
     // Smooth scrolling for anchor links
-    document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             e.preventDefault();
             const target = document.querySelector(this.getAttribute('href'));
@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Dynamic greeting based on time of day - FIXED TEMPLATE LITERALS
+    // Dynamic greeting based on time of day
     const greetingElement = document.querySelector('.welcome h2');
     if (greetingElement) {
         const hour = new Date().getHours();
@@ -87,28 +87,15 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const studentName = greetingElement.textContent.split(', ')[1];
         if (studentName) {
-            greetingElement.textContent = greeting + ', ' + studentName.replace('!', '') + '!';
+            greetingElement.textContent = ${greeting}, ${studentName.replace('!', '')}!;
         }
     }
-
-    // Add loading states to buttons
-    const submitButtons = document.querySelectorAll('button[type="submit"], .btn[type="submit"]');
-    submitButtons.forEach(function(button) {
-        button.addEventListener('click', function() {
-            if (this.form && this.form.checkValidity()) {
-                this.innerHTML = '<div class="loading-spinner"></div> Processing...';
-                this.disabled = true;
-            }
-        });
-    });
 });
 
-// Notification system - FIXED TEMPLATE LITERALS
-function showNotification(message, type) {
-    if (!type) type = 'info';
-    
+// Notification system
+function showNotification(message, type = 'info') {
     const notification = document.createElement('div');
-    notification.className = 'alert ' + type;
+    notification.className = alert ${type};
     notification.textContent = message;
     notification.style.position = 'fixed';
     notification.style.top = '20px';
@@ -118,7 +105,7 @@ function showNotification(message, type) {
     
     document.body.appendChild(notification);
     
-    setTimeout(function() {
+    setTimeout(() => {
         notification.remove();
     }, 5000);
 }
@@ -129,19 +116,8 @@ function searchCourses() {
     const filter = input.value.toLowerCase();
     const courses = document.querySelectorAll('.course');
     
-    courses.forEach(function(course) {
+    courses.forEach(course => {
         const text = course.textContent.toLowerCase();
         course.style.display = text.includes(filter) ? 'block' : 'none';
     });
-}
-
-// Loading state management
-function setLoadingState(element, isLoading) {
-    if (isLoading) {
-        element.disabled = true;
-        element.innerHTML = '<div class="loading-spinner"></div> Loading...';
-    } else {
-        element.disabled = false;
-        element.innerHTML = element.getAttribute('data-original-text');
-    }
 }
