@@ -3,58 +3,56 @@
 {% block title %}University Student Portal{% endblock %}
 
 {% block content %}
-<div class="minimal-hero">
+<!-- Hero Section -->
+<section class="hero">
     <div class="hero-container">
-        <!-- Clean Header -->
-        <div class="logo-section">
-            <div class="main-logo">🎓</div>
-            <h1 class="main-title">University Portal</h1>
-            <p class="tagline">Academic Management System</p>
+        <!-- Logo & Title -->
+        <div class="hero-header">
+            <div class="logo">🎓</div>
+            <h1 class="title">University Portal</h1>
+            <p class="subtitle">Academic Management System</p>
         </div>
 
-        <!-- Simple Button Group -->
-        <div class="access-buttons">
-            <div class="student-access">
+        <!-- Access Buttons -->
+        <div class="access-cards">
+            <div class="card student-card">
                 <h3>Student Access</h3>
                 <div class="button-group">
-                    <a href="{{ url_for('login') }}" class="access-btn primary-btn">
-                        Sign In
-                    </a>
-                    <a href="{{ url_for('register') }}" class="access-btn secondary-btn">
-                        Register
-                    </a>
+                    <a href="{{ url_for('login') }}" class="btn btn-primary">Sign In</a>
+                    <a href="{{ url_for('register') }}" class="btn btn-secondary">Register</a>
                 </div>
             </div>
-            
-            <div class="admin-access">
+
+            <div class="card admin-card">
                 <h3>Administrator</h3>
-                <a href="{{ url_for('admin_login') }}" class="access-btn admin-btn">
-                    Staff Login
-                </a>
+                <a href="{{ url_for('admin_login') }}" class="btn btn-admin">Staff Login</a>
             </div>
         </div>
     </div>
-</div>
+</section>
 
-<!-- Simple Feature Highlights -->
-<div class="simple-features">
+<!-- Features Section -->
+<section class="features">
     <div class="container">
-        <div class="feature-item">
-            <span class="feature-icon">📚</span>
-            <h4>Course Management</h4>
-        </div>
-        <div class="feature-item">
-            <span class="feature-icon">🎓</span>
-            <h4>Grade Tracking</h4>
-        </div>
-        <div class="feature-item">
-            <span class="feature-icon">📢</span>
-            <h4>Announcements</h4>
-        </div>
-        <div class="feature-item">
-            <span class="feature-icon">🤖</span>
-            <h4>Help Desk</h4>
+        <h2 class="features-title">Key Features</h2>
+        <div class="features-grid">
+            <div class="feature">
+                <div class="feature-icon">📚</div>
+                <h4>Course Management</h4>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🎓</div>
+                <h4>Grade Tracking</h4>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">📢</div>
+                <h4>Announcements</h4>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🤖</div>
+                <h4>Help Desk</h4>
+            </div>
         </div>
     </div>
-</div>
+</section>
 {% endblock %}
