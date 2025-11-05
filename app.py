@@ -883,6 +883,8 @@ def timetable():
     
     connection = get_db_connection()
     timetable_data = []
+    
+    # Define days and time slots
     days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
     time_slots = [
         ('08:00:00', '09:30:00', '8:00 AM - 9:30 AM'),
@@ -901,8 +903,10 @@ def timetable():
             cursor.execute("""
                 SELECT 
                     t.day_of_week,
-                    t.start_time,
-                    t.end_time,
+                    TIME_FORMAT(t.start_time, '%H:%i:%s') as start_time_str,
+                    TIME_FORMAT(t.end_time, '%H:%i:%s') as end_time_str,
+                    TIME_FORMAT(t.start_time, '%h:%i %p') as start_time_display,
+                    TIME_FORMAT(t.end_time, '%h:%i %p') as end_time_display,
                     t.room_number,
                     c.course_code,
                     c.course_name,
@@ -914,53 +918,25 @@ def timetable():
             """, (session['student_id'],))
             
             timetable_data = cursor.fetchall()
-            print(f"Loaded {len(timetable_data)} timetable entries")  # Debug
+            print(f"DEBUG: Loaded {len(timetable_data)} timetable entries")
             
         except Error as e:
-            flash('Error loading timetable!', 'error')
-            print(f"Timetable error: {e}")
+            print(f"DEBUG: Timetable database error: {e}")
+            flash('Timetable is currently being set up. Please check back later.', 'info')
         finally:
             connection.close()
+    else:
+        flash('Database connection error!', 'error')
     
     return render_template('timetable.html', 
                          timetable_data=timetable_data,
                          days=days,
                          time_slots=time_slots)
 
-# Admin route to manage timetable (optional)
-@app.route('/admin/timetable')
-@admin_required
-def admin_timetable():
-    connection = get_db_connection()
-    timetable_entries = []
-    
-    if connection:
-        try:
-            cursor = connection.cursor(dictionary=True)
-            cursor.execute("""
-                SELECT 
-                    t.*,
-                    c.course_code,
-                    c.course_name,
-                    s.university_id,
-                    s.first_name,
-                    s.last_name
-                FROM timetable t
-                JOIN courses c ON t.course_id = c.id
-                JOIN students s ON t.student_id = s.id
-                ORDER BY s.university_id, t.day_of_week, t.start_time
-            """)
-            timetable_entries = cursor.fetchall()
-        except Error as e:
-            flash('Error loading timetable!', 'error')
-        finally:
-            connection.close()
-    
-    return render_template('admin/timetable.html', timetable_entries=timetable_entries)
-
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=False)
+
 
 
 
