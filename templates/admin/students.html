@@ -4,8 +4,13 @@
 
 {% block content %}
 <div class="card">
-    <h2>👥 Student Management</h2>
-    <p>Manage all registered students in the system</p>
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h2>👥 Student Management</h2>
+            <p>Manage all registered students in the system</p>
+        </div>
+        <a href="{{ url_for('add_student') }}" class="btn">➕ Add New Student</a>
+    </div>
 </div>
 
 <div class="card">
@@ -14,9 +19,10 @@
         <table>
             <thead>
                 <tr>
-                    <th>Student ID</th>
+                    <th>University ID</th>
                     <th>Name</th>
                     <th>Email</th>
+                    <th>Phone</th>
                     <th>Faculty</th>
                     <th>Major</th>
                     <th>Enrollment Year</th>
@@ -27,10 +33,11 @@
             <tbody>
                 {% for student in students %}
                 <tr>
-                    <td><strong>{{ student.student_id }}</strong></td>
+                    <td><strong>{{ student.university_id }}</strong></td>
                     <td>{{ student.first_name }} {{ student.last_name }}</td>
                     <td>{{ student.email }}</td>
-                    <td>{{ student.faculty_code }}</td>
+                    <td>{{ student.phone_number }}</td>
+                    <td>{{ student.faculty }}</td>
                     <td>{{ student.major }}</td>
                     <td>{{ student.enrollment_year }}</td>
                     <td style="text-align: center;">{{ student.registered_courses }}</td>
@@ -38,7 +45,7 @@
                         <a href="{{ url_for('delete_student', student_id=student.id) }}" 
                            class="btn danger" 
                            onclick="return confirm('Are you sure you want to delete {{ student.first_name }} {{ student.last_name }}? This action cannot be undone.')">
-                            Delete
+                            🗑️ Delete
                         </a>
                     </td>
                 </tr>
@@ -46,12 +53,106 @@
             </tbody>
         </table>
     </div>
+
+    <!-- Quick Stats -->
+    <div style="margin-top: 30px; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
+        <div style="text-align: center; padding: 15px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border-radius: 8px;">
+            <div style="font-size: 1.5rem; font-weight: bold;">{{ students|length }}</div>
+            <div>Total Students</div>
+        </div>
+        <div style="text-align: center; padding: 15px; background: linear-gradient(135deg, #f093fb, #f5576c); color: white; border-radius: 8px;">
+            <div style="font-size: 1.5rem; font-weight: bold;">
+                {% set current_year = 2024 %}
+                {{ students|selectattr('enrollment_year', 'equalto', current_year)|list|length }}
+            </div>
+            <div>New This Year</div>
+        </div>
+        <div style="text-align: center; padding: 15px; background: linear-gradient(135deg, #4facfe, #00f2fe); color: white; border-radius: 8px;">
+            <div style="font-size: 1.5rem; font-weight: bold;">
+                {{ students|selectattr('faculty', 'equalto', 'FCIT')|list|length }}
+            </div>
+            <div>Computer Science</div>
+        </div>
+        <div style="text-align: center; padding: 15px; background: linear-gradient(135deg, #43e97b, #38f9d7); color: white; border-radius: 8px;">
+            <div style="font-size: 1.5rem; font-weight: bold;">
+                {% set total_courses = students|sum(attribute='registered_courses') %}
+                {{ total_courses }}
+            </div>
+            <div>Total Registrations</div>
+        </div>
+    </div>
+    
     {% else %}
-    <div style="text-align: center; padding: 40px; color: #718096;">
+    <div style="text-align: center; padding: 60px 20px; color: #718096;">
         <div style="font-size: 4rem; margin-bottom: 20px;">👥</div>
         <h3>No Students Found</h3>
-        <p>No students have registered yet.</p>
+        <p>No students have registered in the system yet.</p>
+        <div style="margin-top: 25px;">
+            <a href="{{ url_for('add_student') }}" class="btn">➕ Add First Student</a>
+        </div>
     </div>
     {% endif %}
 </div>
+
+<!-- Quick Actions -->
+<div class="card">
+    <h3>🚀 Quick Actions</h3>
+    <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 15px;">
+        <a href="{{ url_for('add_student') }}" class="btn">➕ Add New Student</a>
+        <a href="{{ url_for('admin_courses') }}" class="btn secondary">📚 Manage Courses</a>
+        <a href="{{ url_for('admin_grades') }}" class="btn secondary">🎓 View Grades</a>
+        <a href="{{ url_for('assign_grade') }}" class="btn secondary">📝 Assign Grade</a>
+    </div>
+</div>
+
+<style>
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+th {
+    background: #f7fafc;
+    font-weight: 600;
+    color: #4a5568;
+    padding: 15px 20px;
+    text-align: left;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+td {
+    padding: 12px 20px;
+    border-bottom: 1px solid #e2e8f0;
+    color: #4a5568;
+}
+
+tr:hover {
+    background: #f7fafc;
+}
+
+.btn.danger {
+    background: linear-gradient(135deg, #f56565, #e53e3e);
+    padding: 8px 15px;
+    font-size: 0.85rem;
+}
+
+@media (max-width: 768px) {
+    table {
+        font-size: 0.8rem;
+    }
+    
+    th, td {
+        padding: 10px 8px;
+    }
+    
+    .btn {
+        font-size: 0.8rem;
+        padding: 6px 12px;
+    }
+}
+</style>
 {% endblock %}
