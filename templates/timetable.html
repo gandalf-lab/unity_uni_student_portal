@@ -5,76 +5,105 @@
 {% block content %}
 
 <div class="card">
-    <h2>📅 My Weekly Timetable</h2>
-    <p>View your class schedule for the current semester</p>
+    <div style="text-align: center; margin-bottom: 20px;">
+        <h2>📅 My Weekly Timetable</h2>
+        <p style="color: #718096;">Fall Semester 2024 - Class Schedule</p>
+    </div>
 </div>
 
 <div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="margin: 0;">Weekly Schedule</h3>
+        <div style="background: #48bb78; color: white; padding: 5px 12px; border-radius: 15px; font-size: 0.9rem; font-weight: 600;">
+            ACTIVE
+        </div>
+    </div>
+
     {% if timetable_data %}
     <div style="overflow-x: auto;">
-        <table style="width: 100%; border-collapse: collapse; background: white; border-radius: 10px; overflow: hidden;">
+        <table style="width: 100%; border-collapse: collapse; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
             <thead>
                 <tr style="background: linear-gradient(135deg, #667eea, #764ba2); color: white;">
-                    <th style="padding: 15px; text-align: center; font-weight: 600; width: 120px;">Time/Day</th>
-                    {% for day in days %}
-                    <th style="padding: 15px; text-align: center; font-weight: 600;">{{ day }}</th>
-                    {% endfor %}
+                    <th style="padding: 15px; text-align: left; font-weight: 600;">Day</th>
+                    <th style="padding: 15px; text-align: left; font-weight: 600;">Time</th>
+                    <th style="padding: 15px; text-align: left; font-weight: 600;">Course</th>
+                    <th style="padding: 15px; text-align: left; font-weight: 600;">Instructor</th>
+                    <th style="padding: 15px; text-align: left; font-weight: 600;">Room</th>
                 </tr>
             </thead>
             <tbody>
-                {% for start_time, end_time, display_time in time_slots %}
-                <tr>
-                    <td style="padding: 12px 15px; text-align: center; font-weight: 600; background: #f8f9fa; border-bottom: 1px solid #dee2e6;">
-                        {{ display_time }}
+                {% for class in timetable_data %}
+                <tr style="border-bottom: 1px solid #e2e8f0; transition: all 0.3s ease;">
+                    <td style="padding: 15px; font-weight: 600; color: #2d3748;">
+                        {{ class.day }}
                     </td>
-                    
-                    {% for day in days %}
-                    <td style="padding: 8px; border-bottom: 1px solid #dee2e6; vertical-align: top; min-width: 180px; height: 100px;">
-                        {% for entry in timetable_data %}
-                            {% if entry.day_of_week == day and entry.start_time_str == start_time %}
-                            <div class="timetable-entry" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 10px; border-radius: 8px; margin: 2px; font-size: 0.85rem; height: 90px; display: flex; flex-direction: column; justify-content: center;">
-                                <div style="font-weight: bold; margin-bottom: 4px;">{{ entry.course_code }}</div>
-                                <div style="font-size: 0.75rem; margin-bottom: 2px;">{{ entry.course_name }}</div>
-                                <div style="font-size: 0.7rem; opacity: 0.9;">
-                                    🏠 {{ entry.room_number }}<br>
-                                    👨‍🏫 {{ entry.instructor }}
-                                </div>
-                            </div>
-                            {% endif %}
-                        {% endfor %}
+                    <td style="padding: 15px; color: #4a5568;">
+                        ⏰ {{ class.time }}
                     </td>
-                    {% endfor %}
+                    <td style="padding: 15px;">
+                        <div style="font-weight: 600; color: #667eea;">{{ class.course_code }}</div>
+                        <div style="font-size: 0.9rem; color: #718096;">{{ class.course_name }}</div>
+                    </td>
+                    <td style="padding: 15px; color: #4a5568;">
+                        👨‍🏫 {{ class.instructor }}
+                    </td>
+                    <td style="padding: 15px; color: #4a5568;">
+                        🏠 {{ class.room }}
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
 
+    <!-- Weekly Overview -->
+    <div style="margin-top: 30px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+        <div style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 20px; border-radius: 10px; text-align: center;">
+            <div style="font-size: 2rem; font-weight: bold;">{{ timetable_data|length }}</div>
+            <div>Weekly Classes</div>
+        </div>
+        <div style="background: linear-gradient(135deg, #f093fb, #f5576c); color: white; padding: 20px; border-radius: 10px; text-align: center;">
+            <div style="font-size: 2rem; font-weight: bold;">4</div>
+            <div>Active Courses</div>
+        </div>
+        <div style="background: linear-gradient(135deg, #4facfe, #00f2fe); color: white; padding: 20px; border-radius: 10px; text-align: center;">
+            <div style="font-size: 2rem; font-weight: bold;">5</div>
+            <div>Study Days</div>
+        </div>
+        <div style="background: linear-gradient(135deg, #43e97b, #38f9d7); color: white; padding: 20px; border-radius: 10px; text-align: center;">
+            <div style="font-size: 2rem; font-weight: bold;">12</div>
+            <div>Credit Hours</div>
+        </div>
+    </div>
+
     <!-- Course Summary -->
     <div style="margin-top: 30px; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
         <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; border-left: 4px solid #667eea;">
-            <h4 style="margin-bottom: 15px; color: #2d3748;">📚 Registered Courses This Week</h4>
-            <div style="max-height: 200px; overflow-y: auto;">
-                {% set unique_courses = [] %}
-                {% for entry in timetable_data %}
-                    {% if entry.course_code not in unique_courses %}
-                        {% set _ = unique_courses.append(entry.course_code) %}
-                        <div style="padding: 10px; border-bottom: 1px solid #e2e8f0;">
-                            <strong>{{ entry.course_code }}</strong> - {{ entry.course_name }}<br>
-                            <small style="color: #718096;">{{ entry.instructor }}</small>
-                        </div>
-                    {% endif %}
-                {% endfor %}
-            </div>
+            <h4 style="margin-bottom: 15px; color: #2d3748;">📚 Your Courses</h4>
+            <ul style="list-style: none; padding: 0; margin: 0;">
+                <li style="padding: 8px 0; border-bottom: 1px solid #e2e8f0;">
+                    <strong>CS101</strong> - Introduction to Programming (3 credits)
+                </li>
+                <li style="padding: 8px 0; border-bottom: 1px solid #e2e8f0;">
+                    <strong>MATH201</strong> - Calculus I (4 credits)
+                </li>
+                <li style="padding: 8px 0; border-bottom: 1px solid #e2e8f0;">
+                    <strong>PHY101</strong> - Physics I (4 credits)
+                </li>
+                <li style="padding: 8px 0;">
+                    <strong>ENG101</strong> - English Composition (3 credits)
+                </li>
+            </ul>
         </div>
 
         <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; border-left: 4px solid #48bb78;">
-            <h4 style="margin-bottom: 15px; color: #2d3748;">ℹ Timetable Summary</h4>
+            <h4 style="margin-bottom: 15px; color: #2d3748;">ℹ Timetable Information</h4>
             <div style="line-height: 1.6;">
-                <p><strong>Total Classes This Week:</strong> {{ timetable_data|length }}</p>
-                <p><strong>Unique Courses:</strong> {{ unique_courses|length }}</p>
-                <p><strong>Current Semester:</strong> Fall 2024</p>
-                <p><strong>Last Updated:</strong> Today</p>
+                <p><strong>Semester:</strong> Fall 2024</p>
+                <p><strong>Status:</strong> Active</p>
+                <p><strong>Total Credits:</strong> 14</p>
+                <p><strong>Academic Level:</strong> Undergraduate</p>
+                <p><strong>Last Updated:</strong> November 5, 2024</p>
             </div>
         </div>
     </div>
@@ -83,35 +112,39 @@
     <div style="text-align: center; padding: 60px 20px; color: #718096;">
         <div style="font-size: 4rem; margin-bottom: 20px;">📅</div>
         <h3>No Timetable Available</h3>
-        <p>Your timetable hasn't been set up yet or you haven't been assigned to any classes.</p>
-        <div style="margin-top: 25px;">
-            <a href="{{ url_for('courses') }}" class="btn" style="margin-right: 10px;">Browse Courses</a>
-            <a href="{{ url_for('help_desk') }}" class="btn secondary">Contact Support</a>
-        </div>
+        <p>Your timetable will be available soon.</p>
     </div>
     {% endif %}
 </div>
 
-<style>
-.timetable-entry {
-    transition: all 0.3s ease;
-    cursor: pointer;
-}
+<!-- Prototype Notice -->
+<div class="card" style="background: #fffaf0; border-left: 4px solid #ed8936;">
+    <div style="display: flex; align-items: center; gap: 15px;">
+        <div style="font-size: 2rem;">🚧</div>
+        <div>
+            <h4 style="margin: 0 0 5px 0; color: #2d3748;">Prototype Feature</h4>
+            <p style="margin: 0; color: #718096;">
+                This is a sample timetable for demonstration. The actual timetable will be automatically 
+                generated based on your course registrations in the final version.
+            </p>
+        </div>
+    </div>
+</div>
 
-.timetable-entry:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+<style>
+tr:hover {
+    background-color: #f7fafc;
+    transform: translateX(5px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 @media (max-width: 768px) {
     table {
-        font-size: 0.75rem;
+        font-size: 0.8rem;
     }
     
-    .timetable-entry {
-        font-size: 0.7rem !important;
-        padding: 6px !important;
-        height: 70px !important;
+    th, td {
+        padding: 10px 8px !important;
     }
 }
 </style>
