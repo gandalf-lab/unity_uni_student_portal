@@ -58,9 +58,46 @@
         <div style="text-align: center; margin-top: 15px;">
             <a href="{{ url_for('announcements') }}" class="btn">View All Announcements</a>
         </div>
+    <!-- Add this card to the dashboard after the announcements card -->
+<div class="card">
+    <h3>📅 Today's Classes</h3>
+    {% set today = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] %}
+    {% set today_name = today[now().weekday()] if now else 'Monday' %}
+    
+    <p><strong>Today is {{ today_name }}</strong></p>
+    
+    {% if timetable_data %}
+        {% set todays_classes = [] %}
+        {% for course in timetable_data %}
+            {% if today_name in course.schedule_days %}
+                {% set _ = todays_classes.append(course) %}
+            {% endif %}
+        {% endfor %}
+        
+        {% if todays_classes %}
+            <div style="margin-top: 15px;">
+                {% for course in todays_classes %}
+                <div style="background: #f7fafc; padding: 12px; border-radius: 8px; margin-bottom: 10px;">
+                    <strong>{{ course.course_code }}</strong> - {{ course.course_name }}<br>
+                    <small>⏰ {{ course.schedule_time }} | 🏠 {{ course.room_number }}</small>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>No classes scheduled for today.</p>
+        {% endif %}
+    {% else %}
+        <p>No timetable data available.</p>
+    {% endif %}
+    
+    <div style="text-align: center; margin-top: 15px;">
+        <a href="{{ url_for('timetable') }}" class="btn">View Full Timetable</a>
+    </div>
+</div>
     {% else %}
         <p>No recent announcements.</p>
     {% endif %}
 </div>
+
 
 {% endblock %}
