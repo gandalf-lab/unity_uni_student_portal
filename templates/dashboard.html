@@ -6,15 +6,14 @@
 
 <div class="welcome card">
     <h2>Welcome, {{ student_name }}!</h2>
-    <p><strong>Student ID:</strong> {{ session.get('student_code', 'N/A') }}</p>
+    <p><strong>University ID:</strong> {{ session.get('student_university_id', 'N/A') }}</p>
     <p>Manage your academic journey with our comprehensive student portal.</p>
 </div>
 
-
 <div class="dashboard-cards">
     <div class="dashboard-card">
-        <h3>📊 My Profile</h3>
-        <p>View and update your personal information</p>
+        <h3>👤 My Profile</h3>
+        <p>View your personal information</p>
         <a href="{{ url_for('profile') }}" class="btn">View Profile</a>
     </div>
     
@@ -31,73 +30,219 @@
     </div>
     
     <div class="dashboard-card">
-        <h3>📢 Announcements</h3>
-        <p>Latest news from the university</p>
-        <a href="{{ url_for('announcements') }}" class="btn">View Announcements</a>
+        <h3>📅 My Timetable</h3>
+        <p>View your weekly class schedule</p>
+        <a href="{{ url_for('timetable') }}" class="btn">View Timetable</a>
     </div>
 </div>
 
-
-<div class="card">
-    <h3>📢 Recent Announcements</h3>
-    {% if announcements %}
-        <div class="dashboard-announcements">
-            {% for announcement in announcements[:3] %}
-            <div class="dashboard-announcement {% if announcement.is_important %}dashboard-important{% endif %}">
-                <h4>{{ announcement.title }}</h4>
-                <p>{{ announcement.content[:100] }}{% if announcement.content|length > 100 %}...{% endif %}</p>
-                <div class="announcement-meta">
-                    <span>{{ announcement.created_at.strftime('%b %d') }}</span>
-                    {% if announcement.is_important %}
-                    <span class="important-tag">Important</span>
-                    {% endif %}
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-        <div style="text-align: center; margin-top: 15px;">
-            <a href="{{ url_for('announcements') }}" class="btn">View All Announcements</a>
-        </div>
-    <!-- Add this card to the dashboard after the announcements card -->
+<!-- Today's Classes Section -->
 <div class="card">
     <h3>📅 Today's Classes</h3>
-    {% set today = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] %}
-    {% set today_name = today[now().weekday()] if now else 'Monday' %}
+    {% set days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] %}
+    {% set today_name = days[now().weekday()] if now else 'Monday' %}
     
     <p><strong>Today is {{ today_name }}</strong></p>
     
     {% if timetable_data %}
         {% set todays_classes = [] %}
-        {% for course in timetable_data %}
-            {% if today_name in course.schedule_days %}
-                {% set _ = todays_classes.append(course) %}
+        {% for entry in timetable_data %}
+            {% if entry.day_of_week == today_name %}
+                {% set _ = todays_classes.append(entry) %}
             {% endif %}
         {% endfor %}
         
         {% if todays_classes %}
             <div style="margin-top: 15px;">
-                {% for course in todays_classes %}
-                <div style="background: #f7fafc; padding: 12px; border-radius: 8px; margin-bottom: 10px;">
-                    <strong>{{ course.course_code }}</strong> - {{ course.course_name }}<br>
-                    <small>⏰ {{ course.schedule_time }} | 🏠 {{ course.room_number }}</small>
+                {% for entry in todays_classes %}
+                <div style="background: #f7fafc; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid #667eea; transition: all 0.3s ease;">
+                    <div style="display: flex; justify-content: between; align-items: start;">
+                        <div style="flex: 1;">
+                            <strong style="color: #2d3748; font-size: 1.1rem;">{{ entry.course_code }} - {{ entry.course_name }}</strong>
+                            <div style="margin-top: 8px; color: #4a5568;">
+                                <span style="display: inline-block; margin-right: 15px;">
+                                    ⏰ {{ entry.start_time.strftime('%I:%M %p') }} - {{ entry.end_time.strftime('%I:%M %p') }}
+                                </span>
+                                <span style="display: inline-block; margin-right: 15px;">
+                                    🏠 {{ entry.room_number }}
+                                </span>
+                                <span style="display: inline-block;">
+                                    👨‍🏫 {{ entry.instructor }}
+                                </span>
+                            </div>
+                        </div>
+                        <div style="background: #667eea; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold;">
+                            ACTIVE
+                        </div>
+                    </div>
                 </div>
                 {% endfor %}
             </div>
         {% else %}
-            <p>No classes scheduled for today.</p>
+            <div style="text-align: center; padding: 30px; color: #718096;">
+                <div style="font-size: 3rem; margin-bottom: 15px;">🎉</div>
+                <h4>No classes scheduled for today!</h4>
+                <p>Enjoy your free time or use it for self-study.</p>
+            </div>
         {% endif %}
     {% else %}
-        <p>No timetable data available.</p>
+        <div style="text-align: center; padding: 30px; color: #718096;">
+            <div style="font-size: 3rem; margin-bottom: 15px;">📅</div>
+            <h4>No Timetable Available</h4>
+            <p>Your timetable hasn't been set up yet.</p>
+            <a href="{{ url_for('courses') }}" class="btn" style="margin-top: 15px;">Register for Courses</a>
+        </div>
     {% endif %}
     
-    <div style="text-align: center; margin-top: 15px;">
-        <a href="{{ url_for('timetable') }}" class="btn">View Full Timetable</a>
+    <div style="text-align: center; margin-top: 20px;">
+        <a href="{{ url_for('timetable') }}" class="btn">View Weekly Timetable</a>
     </div>
 </div>
+
+<!-- Quick Stats Section -->
+<div class="card">
+    <h3>📊 Quick Stats</h3>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; margin-top: 15px;">
+        <div style="text-align: center; padding: 20px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border-radius: 10px;">
+            <div style="font-size: 2rem; font-weight: bold;">{{ timetable_data|length if timetable_data else 0 }}</div>
+            <div>Weekly Classes</div>
+        </div>
+        <div style="text-align: center; padding: 20px; background: linear-gradient(135deg, #f093fb, #f5576c); color: white; border-radius: 10px;">
+            <div style="font-size: 2rem; font-weight: bold;">{{ todays_classes|length if todays_classes else 0 }}</div>
+            <div>Today's Classes</div>
+        </div>
+        <div style="text-align: center; padding: 20px; background: linear-gradient(135deg, #4facfe, #00f2fe); color: white; border-radius: 10px;">
+            <div style="font-size: 2rem; font-weight: bold;">
+                {% if timetable_data %}
+                    {% set unique_courses = [] %}
+                    {% for entry in timetable_data %}
+                        {% if entry.course_code not in unique_courses %}
+                            {% set _ = unique_courses.append(entry.course_code) %}
+                        {% endif %}
+                    {% endfor %}
+                    {{ unique_courses|length }}
+                {% else %}
+                    0
+                {% endif %}
+            </div>
+            <div>Active Courses</div>
+        </div>
+        <div style="text-align: center; padding: 20px; background: linear-gradient(135deg, #43e97b, #38f9d7); color: white; border-radius: 10px;">
+            <div style="font-size: 2rem; font-weight: bold;">{{ session.get('student_university_id', 'N/A')|length }}</div>
+            <div>Student ID</div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Announcements Section -->
+<div class="card">
+    <h3>📢 Recent Announcements</h3>
+    {% if announcements %}
+        <div class="dashboard-announcements">
+            {% for announcement in announcements %}
+            <div class="dashboard-announcement {% if announcement.is_important %}dashboard-important{% endif %}">
+                <div style="display: flex; align-items: start; gap: 15px;">
+                    {% if announcement.is_important %}
+                    <div style="background: #e53e3e; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold;">
+                        IMPORTANT
+                    </div>
+                    {% endif %}
+                    <div style="flex: 1;">
+                        <h4 style="margin: 0 0 8px 0; color: #2d3748;">{{ announcement.title }}</h4>
+                        <p style="margin: 0 0 10px 0; color: #4a5568;">{{ announcement.content[:100] }}{% if announcement.content|length > 100 %}...{% endif %}</p>
+                        <div class="announcement-meta">
+                            <span style="color: #718096; font-size: 0.9rem;">{{ announcement.created_at.strftime('%b %d, %Y') }}</span>
+                            <span style="color: #718096; font-size: 0.9rem;">By: {{ announcement.author }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="{{ url_for('announcements') }}" class="btn">View All Announcements</a>
+        </div>
     {% else %}
-        <p>No recent announcements.</p>
+        <div style="text-align: center; padding: 40px; color: #718096;">
+            <div style="font-size: 3rem; margin-bottom: 15px;">📣</div>
+            <h4>No Recent Announcements</h4>
+            <p>Check back later for updates from the university.</p>
+        </div>
     {% endif %}
 </div>
 
+<!-- Upcoming Deadlines Section -->
+<div class="card">
+    <h3>⏰ Important Dates</h3>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 15px;">
+        <div style="background: #fff5f5; padding: 15px; border-radius: 8px; border-left: 4px solid #e53e3e;">
+            <strong style="color: #2d3748;">Course Registration</strong>
+            <p style="margin: 8px 0 0 0; color: #718096;">Ends: September 15, 2024</p>
+        </div>
+        <div style="background: #f0fff4; padding: 15px; border-radius: 8px; border-left: 4px solid #38a169;">
+            <strong style="color: #2d3748;">Midterm Exams</strong>
+            <p style="margin: 8px 0 0 0; color: #718096;">October 10-20, 2024</p>
+        </div>
+        <div style="background: #faf5ff; padding: 15px; border-radius: 8px; border-left: 4px solid #805ad5;">
+            <strong style="color: #2d3748;">Final Exams</strong>
+            <p style="margin: 8px 0 0 0; color: #718096;">December 15-22, 2024</p>
+        </div>
+    </div>
+</div>
+
+<style>
+.welcome.card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    text-align: center;
+}
+
+.welcome.card h2 {
+    color: white;
+    margin-bottom: 15px;
+}
+
+.welcome.card p {
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 10px;
+}
+
+.dashboard-announcement {
+    padding: 15px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
+}
+
+.dashboard-announcement:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-important {
+    border-left: 4px solid #e53e3e;
+    background: #fff5f5;
+}
+
+.announcement-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: #718096;
+    margin-top: 10px;
+}
+
+@media (max-width: 768px) {
+    .dashboard-cards {
+        grid-template-columns: 1fr;
+    }
+    
+    .announcement-meta {
+        flex-direction: column;
+        gap: 5px;
+    }
+}
+</style>
 
 {% endblock %}
