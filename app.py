@@ -305,54 +305,46 @@ def dashboard():
     if 'student_id' not in session:
         return redirect(url_for('login'))
     
-    # Get recent announcements and timetable data for dashboard
+    # Get recent announcements
     connection = get_db_connection()
     announcements = []
-    timetable_data = []
     
     if connection:
         try:
             cursor = connection.cursor(dictionary=True)
-            
-            # Get recent announcements
             cursor.execute("SELECT * FROM announcements ORDER BY created_at DESC LIMIT 3")
             announcements = cursor.fetchall()
-            
-            # Get timetable data for today's classes
-            cursor.execute("""
-                SELECT 
-                    t.day_of_week,
-                    TIME_FORMAT(t.start_time, '%H:%i:%s') as start_time_str,
-                    TIME_FORMAT(t.end_time, '%H:%i:%s') as end_time_str,
-                    TIME_FORMAT(t.start_time, '%h:%i %p') as start_time_display,
-                    TIME_FORMAT(t.end_time, '%h:%i %p') as end_time_display,
-                    t.room_number,
-                    c.course_code,
-                    c.course_name,
-                    c.instructor
-                FROM timetable t
-                JOIN courses c ON t.course_id = c.id
-                WHERE t.student_id = %s
-            """, (session['student_id'],))
-            timetable_data = cursor.fetchall()
-            
-            print(f"DEBUG: Loaded {len(timetable_data)} timetable entries for dashboard")
-            
         except Error as e:
-            print(f"Error loading dashboard data: {e}")
+            print(f"Error loading announcements: {e}")
         finally:
             connection.close()
     
-    # Get current day for today's classes
+    # Static timetable data for today's classes preview
+    static_timetable = [
+        {'day': 'Monday', 'time': '8:00 AM - 9:30 AM', 'course_code': 'CS101', 'course_name': 'Introduction to Programming', 'instructor': 'Dr. Smith', 'room': 'Room 101'},
+        {'day': 'Monday', 'time': '11:30 AM - 1:00 PM', 'course_code': 'MATH201', 'course_name': 'Calculus I', 'instructor': 'Dr. Johnson', 'room': 'Room 202'},
+        {'day': 'Tuesday', 'time': '9:45 AM - 11:15 AM', 'course_code': 'PHY101', 'course_name': 'Physics I', 'instructor': 'Dr. Wilson', 'room': 'Room 305'},
+        {'day': 'Tuesday', 'time': '1:30 PM - 3:00 PM', 'course_code': 'ENG101', 'course_name': 'English Composition', 'instructor': 'Prof. Davis', 'room': 'Room 410'},
+        {'day': 'Wednesday', 'time': '8:00 AM - 9:30 AM', 'course_code': 'CS101', 'course_name': 'Introduction to Programming', 'instructor': 'Dr. Smith', 'room': 'Room 101'},
+        {'day': 'Wednesday', 'time': '11:30 AM - 1:00 PM', 'course_code': 'MATH201', 'course_name': 'Calculus I', 'instructor': 'Dr. Johnson', 'room': 'Room 202'},
+        {'day': 'Thursday', 'time': '9:45 AM - 11:15 AM', 'course_code': 'PHY101', 'course_name': 'Physics I', 'instructor': 'Dr. Wilson', 'room': 'Room 305'},
+        {'day': 'Friday', 'time': '1:30 PM - 3:00 PM', 'course_code': 'ENG101', 'course_name': 'English Composition', 'instructor': 'Prof. Davis', 'room': 'Room 410'}
+    ]
+    
+    # Get current day for today's classes display
     from datetime import datetime
     days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
     today_name = days[datetime.now().weekday()]
     
+    # Filter today's classes
+    todays_classes = [cls for cls in static_timetable if cls['day'] == today_name]
+    
     return render_template('dashboard.html', 
                          student_name=session['student_name'],
                          announcements=announcements,
-                         timetable_data=timetable_data,
-                         today_name=today_name)
+                         todays_classes=todays_classes,
+                         today_name=today_name,
+                         timetable_data=static_timetable)
 
 @app.route('/logout')
 def logout():
@@ -930,6 +922,7 @@ def timetable():
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=False)
+
 
 
 
