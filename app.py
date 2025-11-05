@@ -986,10 +986,108 @@ def add_student():
     
     return render_template('admin/add_student.html')
 
+# Admin Statistics & Reports
+@app.route('/admin/statistics')
+@admin_required
+def admin_statistics():
+    connection = get_db_connection()
+    stats = {}
+    
+    if connection:
+        try:
+            cursor = connection.cursor()
+            
+            # Basic counts
+            cursor.execute("SELECT COUNT(*) FROM students")
+            stats['total_students'] = cursor.fetchone()[0]
+            
+            cursor.execute("SELECT COUNT(*) FROM courses")
+            stats['total_courses'] = cursor.fetchone()[0]
+            
+            cursor.execute("SELECT COUNT(*) FROM announcements")
+            stats['total_announcements'] = cursor.fetchone()[0]
+            
+            cursor.execute("SELECT COUNT(*) FROM registrations")
+            stats['total_registrations'] = cursor.fetchone()[0]
+            
+            # Students by faculty
+            cursor.execute("""
+                SELECT faculty, COUNT(*) as count 
+                FROM students 
+                GROUP BY faculty 
+                ORDER BY count DESC
+            """)
+            stats['students_by_faculty'] = cursor.fetchall()
+            
+            # Students by enrollment year
+            cursor.execute("""
+                SELECT enrollment_year, COUNT(*) as count 
+                FROM students 
+                GROUP BY enrollment_year 
+                ORDER BY enrollment_year DESC
+            """)
+            stats['students_by_year'] = cursor.fetchall()
+            
+            # Course enrollment stats
+            cursor.execute("""
+                SELECT 
+                    c.course_code,
+                    c.course_name,
+                    c.current_enrollment,
+                    c.max_capacity,
+                    ROUND((c.current_enrollment * 100.0 / c.max_capacity), 1) as percentage_full
+                FROM courses c
+                ORDER BY c.current_enrollment DESC
+                LIMIT 10
+            """)
+            stats['popular_courses'] = cursor.fetchall()
+            
+            # Grade distribution
+            cursor.execute("""
+                SELECT 
+                    grade,
+                    COUNT(*) as count,
+                    ROUND((COUNT(*) * 100.0 / (SELECT COUNT(*) FROM grades)), 1) as percentage
+                FROM grades 
+                GROUP BY grade 
+                ORDER BY 
+                    FIELD(grade, 'A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'D+', 'D', 'F')
+            """)
+            stats['grade_distribution'] = cursor.fetchall()
+            
+            # Recent activity
+            cursor.execute("""
+                SELECT 
+                    'Student' as type, 
+                    first_name, 
+                    last_name, 
+                    created_at 
+                FROM students 
+                UNION ALL
+                SELECT 
+                    'Announcement' as type, 
+                    title as first_name, 
+                    author as last_name, 
+                    created_at 
+                FROM announcements
+                ORDER BY created_at DESC 
+                LIMIT 10
+            """)
+            stats['recent_activity'] = cursor.fetchall()
+            
+        except Error as e:
+            print(f"Error loading statistics: {e}")
+            flash('Error loading statistics!', 'error')
+        finally:
+            connection.close()
+    
+    return render_template('admin/statistics.html', stats=stats)
+
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=False)
+
 
 
 
