@@ -1,11 +1,13 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 import mysql.connector
 from mysql.connector import Error
 import bcrypt
 import os
 import random
+import re
 from functools import wraps
 from urllib.parse import urlparse
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -13,14 +15,13 @@ app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', os.urandom(24))
 
 # Database configuration from environment variables
-# Database configuration for Railway
 mysql_url = os.environ.get('MYSQL_URL')
 url_parts = urlparse(mysql_url)
 db_config = {
     'host': url_parts.hostname,
     'user': url_parts.username,
     'password': url_parts.password,
-    'database': url_parts.path[1:],  # This removes the slash
+    'database': url_parts.path[1:],
     'port': url_parts.port or 3306
 }
 
@@ -37,6 +38,31 @@ def hash_password(password):
 
 def check_password(password, hashed):
     return bcrypt.checkpw(password.encode('utf-8'), hashed.encode('utf-8'))
+
+def validate_phone_number(phone):
+    """Validate phone number format"""
+    pattern = r'^\+?1?\d{9,15}$'
+    return re.match(pattern, phone) is not None
+
+def get_majors_by_faculty(faculty):
+    """Get majors based on selected faculty"""
+    faculty_majors = {
+        'FCIT': ['Computer Science', 'Information Technology', 'Software Engineering', 
+                'Cybersecurity', 'Data Science', 'Artificial Intelligence', 
+                'Computer Engineering', 'Network Engineering'],
+        'FBBA': ['Business Administration', 'Accounting', 'Finance', 'Marketing', 
+                'Human Resources', 'International Business', 'Management', 'Entrepreneurship'],
+        'FENG': ['Electrical Engineering', 'Mechanical Engineering', 'Civil Engineering', 
+                'Chemical Engineering', 'Industrial Engineering', 'Biomedical Engineering'],
+        'FMED': ['Medicine', 'Nursing', 'Pharmacy', 'Dentistry', 'Public Health'],
+        'FSCI': ['Biology', 'Chemistry', 'Physics', 'Mathematics', 
+                'Environmental Science', 'Biotechnology'],
+        'FART': ['Psychology', 'Sociology', 'English Literature', 'History', 
+                'Political Science', 'International Relations'],
+        'FLAW': ['Law', 'Criminal Justice'],
+        'FEDU': ['Education', 'Early Childhood Education']
+    }
+    return faculty_majors.get(faculty, [])
 
 def assign_sample_grades(student_id):
     """Assign random sample grades to a new student"""
@@ -149,23 +175,32 @@ def home():
 def register():
     if request.method == 'POST':
         # Get form data
-        faculty_code = request.form['faculty_code']
-        session_type = request.form['session_type']
+        university_id = request.form['university_id'].strip().upper()
+        faculty = request.form['faculty']
         first_name = request.form['first_name']
         last_name = request.form['last_name']
         email = request.form['email']
+        phone_number = request.form['phone_number']
         password = request.form['password']
         confirm_password = request.form['confirm_password']
         major = request.form['major']
         enrollment_year = request.form['enrollment_year']
         
-        # Basic validation
+        # Enhanced validation
         if password != confirm_password:
             flash('Passwords do not match!', 'error')
             return render_template('register.html')
         
         if len(password) < 6:
             flash('Password must be at least 6 characters long!', 'error')
+            return render_template('register.html')
+        
+        if not validate_phone_number(phone_number):
+            flash('Please enter a valid phone number!', 'error')
+            return render_template('register.html')
+        
+        if not enrollment_year or not enrollment_year.isdigit():
+            flash('Please enter a valid enrollment year!', 'error')
             return render_template('register.html')
         
         # Hash password
@@ -177,25 +212,29 @@ def register():
             try:
                 cursor = connection.cursor()
                 
-                # Get the highest numeric_id for this faculty/session
-                cursor.execute(
-                    "SELECT COALESCE(MAX(numeric_id), 0) + 1 FROM students WHERE faculty_code = %s AND session_type = %s",
-                    (faculty_code, session_type)
-                )
-                numeric_id = cursor.fetchone()[0]
+                # Check if university ID already exists
+                cursor.execute("SELECT id FROM students WHERE university_id = %s", (university_id,))
+                if cursor.fetchone():
+                    flash('This University ID is already registered!', 'error')
+                    return render_template('register.html')
                 
-                # Insert new student
+                # Check if email already exists
+                cursor.execute("SELECT id FROM students WHERE email = %s", (email,))
+                if cursor.fetchone():
+                    flash('This email address is already registered!', 'error')
+                    return render_template('register.html')
+                
+                # Insert new student with university ID
                 cursor.execute(
-                    "INSERT INTO students (faculty_code, session_type, numeric_id, first_name, last_name, email, password, major, enrollment_year) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)",
-                    (faculty_code, session_type, numeric_id, first_name, last_name, email, hashed_password, major, enrollment_year)
+                    "INSERT INTO students (university_id, faculty, first_name, last_name, email, phone_number, password, major, enrollment_year) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                    (university_id, faculty, first_name, last_name, email, phone_number, hashed_password, major, enrollment_year)
                 )
                 connection.commit()
                 
-                # Get the generated student_id and database ID
-                cursor.execute("SELECT student_id, id FROM students WHERE email = %s", (email,))
+                # Get the database ID of the new student
+                cursor.execute("SELECT id FROM students WHERE university_id = %s", (university_id,))
                 result = cursor.fetchone()
-                new_student_id = result[0]
-                student_db_id = result[1]
+                student_db_id = result[0]
                 
                 # Assign sample grades automatically
                 assign_sample_grades(student_db_id)
@@ -203,19 +242,18 @@ def register():
                 # Automatically assign program courses
                 assign_program_courses(student_db_id, major)
                 
-                flash(f'Registration successful! Your Student ID: <strong>{new_student_id}</strong><br>Required courses for your program have been automatically assigned.', 'success')
+                flash(f'Registration successful! You can now login with your University ID: <strong>{university_id}</strong>', 'success')
                 return redirect(url_for('login'))
                 
             except Error as e:
-                # More specific error handling
                 error_message = str(e).lower()
                 if "duplicate" in error_message and "email" in error_message:
                     flash('Error: This email address is already registered!', 'error')
-                elif "duplicate" in error_message:
-                    flash('Error: Student with these details already exists!', 'error')
+                elif "duplicate" in error_message and "university_id" in error_message:
+                    flash('Error: This University ID is already registered!', 'error')
                 else:
-                    flash(f'Registration error: Please try again with different details.', 'error')
-                    print(f"Database error: {e}")  # This will help us debug
+                    flash(f'Registration error: {e}', 'error')
+                    print(f"Database error: {e}")
             finally:
                 connection.close()
         else:
@@ -223,10 +261,16 @@ def register():
     
     return render_template('register.html')
 
+@app.route('/get_majors/<faculty>')
+def get_majors(faculty):
+    """API endpoint to get majors for selected faculty"""
+    majors = get_majors_by_faculty(faculty)
+    return jsonify(majors)
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        student_id = request.form['student_id']
+        university_id = request.form['university_id'].strip().upper()
         password = request.form['password']
         
         connection = get_db_connection()
@@ -234,19 +278,19 @@ def login():
             try:
                 cursor = connection.cursor(dictionary=True)
                 cursor.execute(
-                    "SELECT * FROM students WHERE student_id = %s", 
-                    (student_id,)
+                    "SELECT * FROM students WHERE university_id = %s", 
+                    (university_id,)
                 )
                 student = cursor.fetchone()
                 
                 if student and check_password(password, student['password']):
                     session['student_id'] = student['id']
                     session['student_name'] = f"{student['first_name']} {student['last_name']}"
-                    session['student_code'] = student['student_id']
+                    session['student_university_id'] = student['university_id']
                     flash(f'Welcome back, {student["first_name"]}!', 'success')
                     return redirect(url_for('dashboard'))
                 else:
-                    flash('Invalid Student ID or password!', 'error')
+                    flash('Invalid University ID or password!', 'error')
             except Error as e:
                 flash('Login error!', 'error')
             finally:
@@ -310,15 +354,21 @@ def update_profile():
     
     first_name = request.form['first_name']
     last_name = request.form['last_name']
+    phone_number = request.form['phone_number']
     major = request.form['major']
+    
+    # Validate phone number
+    if not validate_phone_number(phone_number):
+        flash('Please enter a valid phone number!', 'error')
+        return redirect(url_for('profile'))
     
     connection = get_db_connection()
     if connection:
         try:
             cursor = connection.cursor()
             cursor.execute(
-                "UPDATE students SET first_name = %s, last_name = %s, major = %s WHERE id = %s",
-                (first_name, last_name, major, session['student_id'])
+                "UPDATE students SET first_name = %s, last_name = %s, phone_number = %s, major = %s WHERE id = %s",
+                (first_name, last_name, phone_number, major, session['student_id'])
             )
             connection.commit()
             session['student_name'] = f"{first_name} {last_name}"
@@ -719,7 +769,7 @@ def admin_grades():
         try:
             cursor = connection.cursor(dictionary=True)
             cursor.execute("""
-                SELECT g.*, s.student_id, s.first_name, s.last_name, c.course_code, c.course_name
+                SELECT g.*, s.university_id, s.first_name, s.last_name, c.course_code, c.course_name
                 FROM grades g
                 JOIN students s ON g.student_id = s.id
                 JOIN courses c ON g.course_id = c.id
@@ -804,7 +854,7 @@ def assign_grade():
     if connection:
         try:
             cursor = connection.cursor(dictionary=True)
-            cursor.execute("SELECT id, student_id, first_name, last_name FROM students ORDER BY first_name")
+            cursor.execute("SELECT id, university_id, first_name, last_name FROM students ORDER BY first_name")
             students = cursor.fetchall()
             
             cursor.execute("SELECT id, course_code, course_name FROM courses ORDER BY course_code")
@@ -840,7 +890,7 @@ def chatbot_response():
         'profile': "Update your personal information in the 'My Profile' section.",
         'announcements': "Check the 'Announcements' section for latest university updates.",
         'password': "If you forgot your password, please contact the IT help desk for password reset.",
-        'login': "Make sure you're using your Student ID (e.g., FCIT/M/001) to login, not your email.",
+        'login': "Make sure you're using your University ID to login.",
         'contact': "For urgent matters, contact:\n- IT Help Desk: it-support@university.edu\n- Administration: admin@university.edu\n- Phone: +1 (555) 123-4567",
         'hours': "University office hours:\nMonday-Friday: 8:00 AM - 6:00 PM\nSaturday: 9:00 AM - 1:00 PM",
         'deadline': "Important deadlines:\n- Course registration: End of first week\n- Grade appeals: Within 7 days of posting\n- Fee payment: 15th of each month",
@@ -859,5 +909,4 @@ def chatbot_response():
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
-
     app.run(host='0.0.0.0', port=port, debug=False)
