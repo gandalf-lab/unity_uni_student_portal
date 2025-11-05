@@ -22,15 +22,17 @@
         {% if session.get('student_id') or session.get('admin_id') %}
         <div class="nav">
             <div class="nav-links">
-                {% if session.get('student_id') %}
-                    <!-- Student Navigation -->
-                    <a href="{{ url_for('dashboard') }}">Dashboard</a>
-                    <a href="{{ url_for('profile') }}">My Profile</a>
-                    <a href="{{ url_for('courses') }}">Course Registration</a>
-                    <a href="{{ url_for('grades') }}">Grades</a>
-                    <a href="{{ url_for('announcements') }}">Announcements</a>
-                    <a href="{{ url_for('help_desk') }}">Help Desk</a>
-                {% elif session.get('admin_id') %}
+                <!-- In the student navigation section -->
+                    {% if session.get('student_id') %}
+                        <!-- Student Navigation -->
+                        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+                        <a href="{{ url_for('profile') }}">My Profile</a>
+                        <a href="{{ url_for('courses') }}">Course Registration</a>
+                        <a href="{{ url_for('timetable') }}">Timetable</a>  <!-- Add this line -->
+                        <a href="{{ url_for('grades') }}">Grades</a>
+                        <a href="{{ url_for('announcements') }}">Announcements</a>
+                        <a href="{{ url_for('help_desk') }}">Help Desk</a>
+                    {% elif session.get('admin_id') %}
                     <!-- Admin Navigation -->
                     <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
                     <a href="{{ url_for('admin_students') }}">Students</a>
@@ -73,3 +75,4 @@
     {% block scripts %}{% endblock %}
 </body>
 </html>
+
