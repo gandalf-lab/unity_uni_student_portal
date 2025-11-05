@@ -1,4 +1,3 @@
-
 {% extends "base.html" %}
 
 {% block title %}Register - Student Portal{% endblock %}
@@ -12,11 +11,18 @@
             <p style="color: #718096;">Join our student community</p>
         </div>
 
-        <form method="POST">
+        <form method="POST" id="registrationForm">
+            <div class="form-group">
+                <label>🎓 University ID</label>
+                <input type="text" name="university_id" placeholder="Enter your University ID (e.g., U2024001)" required>
+                <small style="color: #718096; display: block; margin-top: 5px;">
+                    Use the ID provided by the university during admission
+                </small>
+            </div>
+            
             <div class="form-group">
                 <label>🎓 Faculty</label>
-
-                <select name="faculty_code" required>
+                <select name="faculty" id="facultySelect" required onchange="updateMajors()">
                     <option value="">Select Faculty</option>
                     <option value="FCIT">Faculty of Computer & Information Technology</option>
                     <option value="FBBA">Faculty of Business & Business Administration</option>
@@ -30,16 +36,11 @@
             </div>
             
             <div class="form-group">
-                <label>⏰ Session</label>
-                <select name="session_type" required>
-                    <option value="">Select Session</option>
-                    <option value="M">Morning (M)</option>
-                    <option value="A">Afternoon (A)</option>
-                    <option value="E">Evening (E)</option>
-                    <option value="W">Weekend (W)</option>
+                <label>🎯 Major/Program</label>
+                <select name="major" id="majorSelect" required disabled>
+                    <option value="">First select your Faculty</option>
                 </select>
             </div>
-            
 
             <div class="form-group">
                 <label>👤 First Name</label>
@@ -57,7 +58,14 @@
             </div>
             
             <div class="form-group">
-
+                <label>📞 Phone Number</label>
+                <input type="tel" name="phone_number" placeholder="Enter your phone number" required>
+                <small style="color: #718096; display: block; margin-top: 5px;">
+                    Format: +1234567890 or 1234567890
+                </small>
+            </div>
+            
+            <div class="form-group">
                 <label>🔒 Password</label>
                 <input type="password" name="password" placeholder="Create a password (min 6 characters)" required>
             </div>
@@ -67,100 +75,9 @@
                 <input type="password" name="confirm_password" placeholder="Confirm your password" required>
             </div>
             
-            
-<div class="form-group">
-    <label>🎯 Major/Program</label>
-    <select name="major" required>
-        <option value="">Select Your Major</option>
-        
-        <!-- Computer & IT Majors -->
-        <optgroup label="Computer & Information Technology">
-            <option value="Computer Science">Computer Science</option>
-            <option value="Information Technology">Information Technology</option>
-            <option value="Software Engineering">Software Engineering</option>
-            <option value="Cybersecurity">Cybersecurity</option>
-            <option value="Data Science">Data 
-
-Science</option>
-            <option value="Artificial Intelligence">Artificial Intelligence</option>
-            <option value="Computer Engineering">Computer Engineering</option>
-            <option value="Network Engineering">Network Engineering</option>
-        </optgroup>
-        
-        <!-- Business Majors -->
-        <optgroup label="Business & Administration">
-            <option value="Business Administration">Business Administration</option>
-            <option value="Accounting">Accounting</option>
-            <option value="Finance">Finance</
-
-option>
-            <option value="Marketing">Marketing</option>
-            <option value="Human Resources">Human Resources</option>
-            <option value="International Business">International Business</option>
-            <option value="Management">Management</option>
-            <option value="Entrepreneurship">Entrepreneurship</option>
-        </optgroup>
-        
-        <!-- Engineering Majors -->
-        <optgroup label="Engineering">
-            <option value="Electrical Engineering">Electrical Engineering</option>
-            <option value="Mechanical 
-
-Engineering">Mechanical Engineering</option>
-            <option value="Civil Engineering">Civil Engineering</option>
-            <option value="Chemical Engineering">Chemical Engineering</option>
-            <option value="Industrial Engineering">Industrial Engineering</option>
-            <option value="Biomedical Engineering">Biomedical Engineering</option>
-        </optgroup>
-        
-        <!-- Science Majors -->
-        <optgroup label="Science">
-            <option value="Biology">Biology</option>
-            <option value="Chemistry">Chemistry</option>
-
-            <option value="Physics">Physics</option>
-            <option value="Mathematics">Mathematics</option>
-            <option value="Environmental Science">Environmental Science</option>
-            <option value="Biotechnology">Biotechnology</option>
-        </optgroup>
-        
-        <!-- Medicine & Health -->
-        <optgroup label="Medicine & Health">
-            <option value="Medicine">Medicine</option>
-            <option value="Nursing">Nursing</option>
-            <option value="Pharmacy">Pharmacy</option>
-            <option 
-
-value="Dentistry">Dentistry</option>
-            <option value="Public Health">Public Health</option>
-        </optgroup>
-        
-        <!-- Arts & Humanities -->
-        <optgroup label="Arts & Humanities">
-            <option value="Psychology">Psychology</option>
-            <option value="Sociology">Sociology</option>
-            <option value="English Literature">English Literature</option>
-            <option value="History">History</option>
-            <option value="Political Science">Political Science</option>
-            <option value="International Relations">International Relations</option>
-        </optgroup>
-        
-
-        <!-- Law & Education -->
-        <optgroup label="Law & Education">
-            <option value="Law">Law</option>
-            <option value="Criminal Justice">Criminal Justice</option>
-            <option value="Education">Education</option>
-            <option value="Early Childhood Education">Early Childhood Education</option>
-        </optgroup>
-    </select>
-</div>
-
-
-            
             <div class="form-group">
                 <label>📅 Enrollment Year</label>
-                <input type="number" name="enrollment_year" placeholder="2024" min="2000" max="2030">
+                <input type="number" name="enrollment_year" placeholder="2024" min="2000" max="2030" required>
             </div>
             
             <button type="submit" class="btn" style="width: 100%;">Create Account</button>
@@ -168,22 +85,57 @@ value="Dentistry">Dentistry</option>
         
         <div style="text-align: center; margin-top: 25px; padding-top: 25px; border-top: 1px solid #e2e8f0;">
             <p style="color: #718096;">Already have an account? 
-                <a href="{{ url_for('login') }}" style="color: #667eea; text-decoration: 
-
-none; font-weight: bold;">
+                <a href="{{ url_for('login') }}" style="color: #667eea; text-decoration: none; font-weight: bold;">
                     Sign In
                 </a>
             </p>
         </div>
-
-        <div style="margin-top: 20px; padding: 15px; background: #f7fafc; border-radius: 10px;">
-            <h4 style="margin-bottom: 10px; color: #4a5568;">📝 Student ID Information</h4>
-            <p style="color: #718096; font-size: 0.9rem; margin: 0;">
-                Your Student ID will be automatically generated in the format: <strong>FACULTY/SESSION/NUMBER</strong><br>
-                Example: <code>FCIT/M/001</code> for Faculty of Computer & IT, Morning session
-
-            </p>
-        </div>
     </div>
 </div>
+
+<script>
+async function updateMajors() {
+    const facultySelect = document.getElementById('facultySelect');
+    const majorSelect = document.getElementById('majorSelect');
+    const selectedFaculty = facultySelect.value;
+    
+    if (!selectedFaculty) {
+        majorSelect.innerHTML = '<option value="">First select your Faculty</option>';
+        majorSelect.disabled = true;
+        return;
+    }
+    
+    try {
+        // FIXED: Use backticks for template literal
+        const response = await fetch(`/get_majors/${selectedFaculty}`);
+        const majors = await response.json();
+        
+        majorSelect.innerHTML = '<option value="">Select Your Major</option>';
+        majors.forEach(major => {
+            const option = document.createElement('option');
+            option.value = major;
+            option.textContent = major;
+            majorSelect.appendChild(option);
+        });
+        
+        majorSelect.disabled = false;
+    } catch (error) {
+        console.error('Error fetching majors:', error);
+        majorSelect.innerHTML = '<option value="">Error loading majors</option>';
+    }
+}
+
+// Phone number validation
+document.getElementById('registrationForm').addEventListener('submit', function(e) {
+    const phoneInput = document.querySelector('input[name="phone_number"]');
+    const phone = phoneInput.value.trim();
+    const phoneRegex = /^\+?1?\d{9,15}$/;
+    
+    if (!phoneRegex.test(phone)) {
+        e.preventDefault();
+        alert('Please enter a valid phone number (9-15 digits, optional + prefix)');
+        phoneInput.focus();
+    }
+});
+</script>
 {% endblock %}
