@@ -20,6 +20,7 @@
             <a href="{{ url_for('admin_announcements') }}">Announcements</a>
             <a href="{{ url_for('admin_grades') }}">Grades</a>
             <a href="{{ url_for('assign_grade') }}">Assign Grade</a>
+            <a href="{{ url_for('admin_statistics') }}">Statistics</a>
         </div>
             <div class="nav-user">
                 <span style="color: #4a5568; margin-right: 15px;">Admin: {{ session.get('admin_name', 'Admin') }}</span>
@@ -46,4 +47,5 @@
     {% block scripts %}{% endblock %}
 </body>
 </html>
+
 
