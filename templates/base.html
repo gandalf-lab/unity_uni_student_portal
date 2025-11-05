@@ -44,11 +44,9 @@
                 {% endif %}
             </div>
             <div class="nav-user">
-                {% if session.get('student_id') %}
-                    <span style="color: #4a5568; margin-right: 15px;">Hello, {{ session.get('student_name', 'Student') }}</span>
+                {% if 
                     <a href="{{ url_for('logout') }}" class="btn secondary">Logout</a>
                 {% elif session.get('admin_id') %}
-                    <span style="color: #4a5568; margin-right: 15px;">Admin: {{ session.get('admin_name', 'Admin') }}</span>
                     <a href="{{ url_for('admin_logout') }}" class="btn danger">Logout</a>
                 {% endif %}
             </div>
@@ -76,5 +74,6 @@
     {% block scripts %}{% endblock %}
 </body>
 </html>
+
 
 
