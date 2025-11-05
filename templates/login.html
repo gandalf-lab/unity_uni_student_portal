@@ -1,4 +1,3 @@
-
 {% extends "base.html" %}
 
 {% block title %}Login - Student Portal{% endblock %}
@@ -9,14 +8,13 @@
         <div style="text-align: center; margin-bottom: 30px;">
             <div style="font-size: 4rem; margin-bottom: 10px;">🎓</div>
             <h2>Student Login</h2>
-            <p style="color: #718096;">Sign in with your Student ID</p>
+            <p style="color: #718096;">Sign in with your University ID</p>
         </div>
 
         <form method="POST">
             <div class="form-group">
-                <label>🎫 Student ID</label>
-
-                <input type="text" name="student_id" placeholder="Enter your Student ID (e.g., FCIT/M/001)" required>
+                <label>🎫 University ID</label>
+                <input type="text" name="university_id" placeholder="Enter your University ID" required>
             </div>
             
             <div class="form-group">
@@ -28,9 +26,7 @@
         </form>
         
         <div style="text-align: center; margin-top: 25px; padding-top: 25px; border-top: 1px solid #e2e8f0;">
-            <p style="color: #718096;">Don't 
-
-have an account? 
+            <p style="color: #718096;">Don't have an account? 
                 <a href="{{ url_for('register') }}" style="color: #667eea; text-decoration: none; font-weight: bold;">
                     Register Here
                 </a>
@@ -38,12 +34,11 @@ have an account?
         </div>
 
         <div style="margin-top: 20px; padding: 15px; background: #f7fafc; border-radius: 10px;">
-            <h4 style="margin-bottom: 10px; color: #4a5568;">ℹ️ Login Help</h4>
+            <h4 style="margin-bottom: 10px; color: #4a5568;">ℹ Login Help</h4>
             <p style="color: #718096; font-size: 0.9rem; margin: 0;">
-                Use your <strong>Student ID</strong> (e.g., FCIT/M/001) to login.<br>
-                Your Student ID was provided during registration.
+                Use your <strong>University ID</strong> to login.<br>
+                Your University ID was provided during university admission.
             </p>
-
         </div>
     </div>
 </div>
