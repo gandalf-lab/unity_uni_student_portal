@@ -347,38 +347,7 @@ def profile():
     
     return redirect(url_for('dashboard'))
 
-@app.route('/profile/update', methods=['POST'])
-def update_profile():
-    if 'student_id' not in session:
-        return redirect(url_for('login'))
-    
-    first_name = request.form['first_name']
-    last_name = request.form['last_name']
-    phone_number = request.form['phone_number']
-    major = request.form['major']
-    
-    # Validate phone number
-    if not validate_phone_number(phone_number):
-        flash('Please enter a valid phone number!', 'error')
-        return redirect(url_for('profile'))
-    
-    connection = get_db_connection()
-    if connection:
-        try:
-            cursor = connection.cursor()
-            cursor.execute(
-                "UPDATE students SET first_name = %s, last_name = %s, phone_number = %s, major = %s WHERE id = %s",
-                (first_name, last_name, phone_number, major, session['student_id'])
-            )
-            connection.commit()
-            session['student_name'] = f"{first_name} {last_name}"
-            flash('Profile updated successfully!', 'success')
-        except Error as e:
-            flash('Error updating profile!', 'error')
-        finally:
-            connection.close()
-    
-    return redirect(url_for('profile'))
+
 
 @app.route('/courses')
 def courses():
@@ -910,3 +879,4 @@ def chatbot_response():
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=False)
+
