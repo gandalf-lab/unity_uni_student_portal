@@ -913,61 +913,24 @@ def timetable():
     if 'student_id' not in session:
         return redirect(url_for('login'))
     
-    connection = get_db_connection()
-    timetable_data = []
-    
-    # Define days and time slots
-    days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-    time_slots = [
-        ('08:00:00', '09:30:00', '8:00 AM - 9:30 AM'),
-        ('09:45:00', '11:15:00', '9:45 AM - 11:15 AM'),
-        ('11:30:00', '13:00:00', '11:30 AM - 1:00 PM'),
-        ('13:30:00', '15:00:00', '1:30 PM - 3:00 PM'),
-        ('15:15:00', '16:45:00', '3:15 PM - 4:45 PM'),
-        ('17:00:00', '18:30:00', '5:00 PM - 6:30 PM')
+    # Static timetable data - always visible for prototype
+    static_timetable = [
+        {'day': 'Monday', 'time': '8:00 AM - 9:30 AM', 'course_code': 'CS101', 'course_name': 'Introduction to Programming', 'instructor': 'Dr. Smith', 'room': 'Room 101'},
+        {'day': 'Monday', 'time': '11:30 AM - 1:00 PM', 'course_code': 'MATH201', 'course_name': 'Calculus I', 'instructor': 'Dr. Johnson', 'room': 'Room 202'},
+        {'day': 'Tuesday', 'time': '9:45 AM - 11:15 AM', 'course_code': 'PHY101', 'course_name': 'Physics I', 'instructor': 'Dr. Wilson', 'room': 'Room 305'},
+        {'day': 'Tuesday', 'time': '1:30 PM - 3:00 PM', 'course_code': 'ENG101', 'course_name': 'English Composition', 'instructor': 'Prof. Davis', 'room': 'Room 410'},
+        {'day': 'Wednesday', 'time': '8:00 AM - 9:30 AM', 'course_code': 'CS101', 'course_name': 'Introduction to Programming', 'instructor': 'Dr. Smith', 'room': 'Room 101'},
+        {'day': 'Wednesday', 'time': '11:30 AM - 1:00 PM', 'course_code': 'MATH201', 'course_name': 'Calculus I', 'instructor': 'Dr. Johnson', 'room': 'Room 202'},
+        {'day': 'Thursday', 'time': '9:45 AM - 11:15 AM', 'course_code': 'PHY101', 'course_name': 'Physics I', 'instructor': 'Dr. Wilson', 'room': 'Room 305'},
+        {'day': 'Friday', 'time': '1:30 PM - 3:00 PM', 'course_code': 'ENG101', 'course_name': 'English Composition', 'instructor': 'Prof. Davis', 'room': 'Room 410'}
     ]
     
-    if connection:
-        try:
-            cursor = connection.cursor(dictionary=True)
-            
-            # Get student's timetable with course details
-            cursor.execute("""
-                SELECT 
-                    t.day_of_week,
-                    TIME_FORMAT(t.start_time, '%H:%i:%s') as start_time_str,
-                    TIME_FORMAT(t.end_time, '%H:%i:%s') as end_time_str,
-                    TIME_FORMAT(t.start_time, '%h:%i %p') as start_time_display,
-                    TIME_FORMAT(t.end_time, '%h:%i %p') as end_time_display,
-                    t.room_number,
-                    c.course_code,
-                    c.course_name,
-                    c.instructor
-                FROM timetable t
-                JOIN courses c ON t.course_id = c.id
-                WHERE t.student_id = %s
-                ORDER BY t.day_of_week, t.start_time
-            """, (session['student_id'],))
-            
-            timetable_data = cursor.fetchall()
-            print(f"DEBUG: Loaded {len(timetable_data)} timetable entries")
-            
-        except Error as e:
-            print(f"DEBUG: Timetable database error: {e}")
-            flash('Timetable is currently being set up. Please check back later.', 'info')
-        finally:
-            connection.close()
-    else:
-        flash('Database connection error!', 'error')
-    
-    return render_template('timetable.html', 
-                         timetable_data=timetable_data,
-                         days=days,
-                         time_slots=time_slots)
+    return render_template('timetable.html', timetable_data=static_timetable)
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=False)
+
 
 
 
