@@ -305,22 +305,54 @@ def dashboard():
     if 'student_id' not in session:
         return redirect(url_for('login'))
     
-    # Get recent announcements for dashboard
+    # Get recent announcements and timetable data for dashboard
     connection = get_db_connection()
     announcements = []
+    timetable_data = []
+    
     if connection:
         try:
             cursor = connection.cursor(dictionary=True)
+            
+            # Get recent announcements
             cursor.execute("SELECT * FROM announcements ORDER BY created_at DESC LIMIT 3")
             announcements = cursor.fetchall()
+            
+            # Get timetable data for today's classes
+            cursor.execute("""
+                SELECT 
+                    t.day_of_week,
+                    TIME_FORMAT(t.start_time, '%H:%i:%s') as start_time_str,
+                    TIME_FORMAT(t.end_time, '%H:%i:%s') as end_time_str,
+                    TIME_FORMAT(t.start_time, '%h:%i %p') as start_time_display,
+                    TIME_FORMAT(t.end_time, '%h:%i %p') as end_time_display,
+                    t.room_number,
+                    c.course_code,
+                    c.course_name,
+                    c.instructor
+                FROM timetable t
+                JOIN courses c ON t.course_id = c.id
+                WHERE t.student_id = %s
+            """, (session['student_id'],))
+            timetable_data = cursor.fetchall()
+            
+            print(f"DEBUG: Loaded {len(timetable_data)} timetable entries for dashboard")
+            
         except Error as e:
-            print(f"Error loading announcements: {e}")
+            print(f"Error loading dashboard data: {e}")
         finally:
             connection.close()
     
+    # Get current day for today's classes
+    from datetime import datetime
+    days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+    today_name = days[datetime.now().weekday()]
+    
     return render_template('dashboard.html', 
                          student_name=session['student_name'],
-                         announcements=announcements)
+                         announcements=announcements,
+                         timetable_data=timetable_data,
+                         today_name=today_name)
 
 @app.route('/logout')
 def logout():
@@ -936,6 +968,7 @@ def timetable():
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=False)
+
 
 
 
