@@ -1,0 +1,115 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Add New Student{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>👤 Add New Student</h2>
+    <p>Manually register a new student in the system</p>
+</div>
+
+<div class="card">
+    <form method="POST" id="addStudentForm">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div class="form-group">
+                <label>🎓 University ID *</label>
+                <input type="text" name="university_id" placeholder="e.g., U2024001" required>
+            </div>
+            
+            <div class="form-group">
+                <label>🎓 Faculty *</label>
+                <select name="faculty" required>
+                    <option value="">Select Faculty</option>
+                    <option value="FCIT">Faculty of Computer & IT</option>
+                    <option value="FBBA">Faculty of Business</option>
+                    <option value="FENG">Faculty of Engineering</option>
+                    <option value="FMED">Faculty of Medicine</option>
+                    <option value="FSCI">Faculty of Science</option>
+                    <option value="FART">Faculty of Arts</option>
+                    <option value="FLAW">Faculty of Law</option>
+                    <option value="FEDU">Faculty of Education</option>
+                </select>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div class="form-group">
+                <label>👤 First Name *</label>
+                <input type="text" name="first_name" placeholder="First Name" required>
+            </div>
+            
+            <div class="form-group">
+                <label>👤 Last Name *</label>
+                <input type="text" name="last_name" placeholder="Last Name" required>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div class="form-group">
+                <label>📧 Email Address *</label>
+                <input type="email" name="email" placeholder="student@university.edu" required>
+            </div>
+            
+            <div class="form-group">
+                <label>📞 Phone Number *</label>
+                <input type="tel" name="phone_number" placeholder="+1234567890" required>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div class="form-group">
+                <label>🎯 Major/Program *</label>
+                <select name="major" required>
+                    <option value="">Select Major</option>
+                    <optgroup label="Computer & IT">
+                        <option value="Computer Science">Computer Science</option>
+                        <option value="Information Technology">Information Technology</option>
+                        <option value="Software Engineering">Software Engineering</option>
+                    </optgroup>
+                    <optgroup label="Business">
+                        <option value="Business Administration">Business Administration</option>
+                        <option value="Accounting">Accounting</option>
+                        <option value="Finance">Finance</option>
+                    </optgroup>
+                    <optgroup label="Engineering">
+                        <option value="Electrical Engineering">Electrical Engineering</option>
+                        <option value="Mechanical Engineering">Mechanical Engineering</option>
+                        <option value="Civil Engineering">Civil Engineering</option>
+                    </optgroup>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>📅 Enrollment Year *</label>
+                <input type="number" name="enrollment_year" placeholder="2024" min="2000" max="2030" required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>🔒 Temporary Password *</label>
+            <input type="password" name="password" placeholder="Set temporary password" required>
+            <small style="color: #718096;">Student will use this to login first time</small>
+        </div>
+
+        <div style="display: flex; gap: 15px; margin-top: 25px;">
+            <button type="submit" class="btn">➕ Add Student</button>
+            <a href="{{ url_for('admin_students') }}" class="btn secondary">← Back to Students</a>
+        </div>
+    </form>
+</div>
+
+<script>
+// Phone number validation
+document.getElementById('addStudentForm').addEventListener('submit', function(e) {
+    const phoneInput = document.querySelector('input[name="phone_number"]');
+    const phone = phoneInput.value.trim();
+    const phoneRegex = /^\+?1?\d{9,15}$/;
+    
+    if (!phoneRegex.test(phone)) {
+        e.preventDefault();
+        alert('Please enter a valid phone number (9-15 digits, optional + prefix)');
+        phoneInput.focus();
+    }
+});
+</script>
+{% endblock %}
