@@ -31,7 +31,7 @@
                     {% for day in days %}
                     <td style="padding: 8px; border-bottom: 1px solid #dee2e6; vertical-align: top; min-width: 180px; height: 100px;">
                         {% for entry in timetable_data %}
-                            {% if entry.day_of_week == day and entry.start_time.strftime('%H:%M:%S') == start_time %}
+                            {% if entry.day_of_week == day and entry.start_time_str == start_time %}
                             <div class="timetable-entry" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 10px; border-radius: 8px; margin: 2px; font-size: 0.85rem; height: 90px; display: flex; flex-direction: column; justify-content: center;">
                                 <div style="font-weight: bold; margin-bottom: 4px;">{{ entry.course_code }}</div>
                                 <div style="font-size: 0.75rem; margin-bottom: 2px;">{{ entry.course_name }}</div>
