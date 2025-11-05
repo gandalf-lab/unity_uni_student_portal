@@ -876,7 +876,47 @@ def chatbot_response():
     
     return {'response': response}
 
+@app.route('/timetable')
+def timetable():
+    if 'student_id' not in session:
+        return redirect(url_for('login'))
+    
+    connection = get_db_connection()
+    timetable_data = []
+    
+    if connection:
+        try:
+            cursor = connection.cursor(dictionary=True)
+            
+            # Get student's registered courses with schedule information
+            cursor.execute("""
+                SELECT 
+                    c.course_code,
+                    c.course_name,
+                    c.schedule_days,
+                    c.schedule_time,
+                    c.instructor,
+                    c.room_number
+                FROM courses c
+                JOIN registrations r ON c.id = r.course_id
+                WHERE r.student_id = %s
+                ORDER BY 
+                    FIELD(c.schedule_days, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'),
+                    c.schedule_time
+            """, (session['student_id'],))
+            
+            timetable_data = cursor.fetchall()
+            
+        except Error as e:
+            flash('Error loading timetable!', 'error')
+            print(f"Timetable error: {e}")
+        finally:
+            connection.close()
+    
+    return render_template('timetable.html', timetable_data=timetable_data)
+
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=False)
+
 
