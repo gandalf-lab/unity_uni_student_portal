@@ -11,14 +11,16 @@
         <!-- Admin Header -->
         <div class="nav">
             <!-- In templates/admin/base.html, update nav-links -->
+            <!-- In admin navigation -->
             <div class="nav-links">
-                <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
-                <a href="{{ url_for('admin_students') }}">Students</a>
-                <a href="{{ url_for('admin_courses') }}">Courses</a>
-                <a href="{{ url_for('admin_announcements') }}">Announcements</a>
-                <a href="{{ url_for('admin_grades') }}">Grades</a>
-                <a href="{{ url_for('assign_grade') }}">Assign Grade</a>  <!-- Add this line -->
-            </div>
+            <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('admin_students') }}">Students</a>
+            <a href="{{ url_for('add_student') }}">Add Student</a>  <!-- Add this line -->
+            <a href="{{ url_for('admin_courses') }}">Courses</a>
+            <a href="{{ url_for('admin_announcements') }}">Announcements</a>
+            <a href="{{ url_for('admin_grades') }}">Grades</a>
+            <a href="{{ url_for('assign_grade') }}">Assign Grade</a>
+        </div>
             <div class="nav-user">
                 <span style="color: #4a5568; margin-right: 15px;">Admin: {{ session.get('admin_name', 'Admin') }}</span>
                 <a href="{{ url_for('admin_logout') }}" class="btn danger">Logout</a>
@@ -44,3 +46,4 @@
     {% block scripts %}{% endblock %}
 </body>
 </html>
+
