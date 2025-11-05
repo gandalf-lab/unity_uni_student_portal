@@ -919,9 +919,78 @@ def timetable():
     
     return render_template('timetable.html', timetable_data=static_timetable)
 
+# Add New Student - Admin
+@app.route('/admin/students/add', methods=['GET', 'POST'])
+@admin_required
+def add_student():
+    if request.method == 'POST':
+        university_id = request.form['university_id'].strip().upper()
+        faculty = request.form['faculty']
+        first_name = request.form['first_name']
+        last_name = request.form['last_name']
+        email = request.form['email']
+        phone_number = request.form['phone_number']
+        password = request.form['password']
+        major = request.form['major']
+        enrollment_year = request.form['enrollment_year']
+        
+        # Basic validation
+        if not validate_phone_number(phone_number):
+            flash('Please enter a valid phone number!', 'error')
+            return render_template('admin/add_student.html')
+        
+        # Hash password
+        hashed_password = hash_password(password)
+        
+        connection = get_db_connection()
+        if connection:
+            try:
+                cursor = connection.cursor()
+                
+                # Check if university ID already exists
+                cursor.execute("SELECT id FROM students WHERE university_id = %s", (university_id,))
+                if cursor.fetchone():
+                    flash('This University ID is already registered!', 'error')
+                    return render_template('admin/add_student.html')
+                
+                # Check if email already exists
+                cursor.execute("SELECT id FROM students WHERE email = %s", (email,))
+                if cursor.fetchone():
+                    flash('This email address is already registered!', 'error')
+                    return render_template('admin/add_student.html')
+                
+                # Insert new student
+                cursor.execute(
+                    "INSERT INTO students (university_id, faculty, first_name, last_name, email, phone_number, password, major, enrollment_year) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                    (university_id, faculty, first_name, last_name, email, phone_number, hashed_password, major, enrollment_year)
+                )
+                connection.commit()
+                
+                # Get the new student ID
+                cursor.execute("SELECT id FROM students WHERE university_id = %s", (university_id,))
+                student_id = cursor.fetchone()[0]
+                
+                # Assign sample grades and courses
+                assign_sample_grades(student_id)
+                assign_program_courses(student_id, major)
+                
+                flash(f'Student {first_name} {last_name} added successfully! University ID: {university_id}', 'success')
+                return redirect(url_for('admin_students'))
+                
+            except Error as e:
+                flash(f'Error adding student: {e}', 'error')
+            finally:
+                connection.close()
+        else:
+            flash('Database connection error!', 'error')
+    
+    return render_template('admin/add_student.html')
+
+
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=False)
+
 
 
 
