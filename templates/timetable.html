@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}My Timetable - Student Portal{% endblock %}
+
+{% block content %}
+
+<div class="card">
+    <h2>📅 My Weekly Timetable</h2>
+    <p>View your class schedule for the current semester</p>
+</div>
+
+<div class="card">
+    {% if timetable_data %}
+    <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background: #f7fafc;">
+                    <th style="padding: 15px; text-align: left; border-bottom: 2px solid #e2e8f0; font-weight: 600;">Time/Day</th>
+                    <th style="padding: 15px; text-align: left; border-bottom: 2px solid #e2e8f0; font-weight: 600;">Monday</th>
+                    <th style="padding: 15px; text-align: left; border-bottom: 2px solid #e2e8f0; font-weight: 600;">Tuesday</th>
+                    <th style="padding: 15px; text-align: left; border-bottom: 2px solid #e2e8f0; font-weight: 600;">Wednesday</th>
+                    <th style="padding: 15px; text-align: left; border-bottom: 2px solid #e2e8f0; font-weight: 600;">Thursday</th>
+                    <th style="padding: 15px; text-align: left; border-bottom: 2px solid #e2e8f0; font-weight: 600;">Friday</th>
+                    <th style="padding: 15px; text-align: left; border-bottom: 2px solid #e2e8f0; font-weight: 600;">Saturday</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% set time_slots = [
+                    '8:00 AM - 9:30 AM',
+                    '9:45 AM - 11:15 AM', 
+                    '11:30 AM - 1:00 PM',
+                    '1:30 PM - 3:00 PM',
+                    '3:15 PM - 4:45 PM',
+                    '5:00 PM - 6:30 PM'
+                ] %}
+                
+                {% for time_slot in time_slots %}
+                <tr>
+                    <td style="padding: 12px 15px; border-bottom: 1px solid #e2e8f0; font-weight: 600; background: #f7fafc;">
+                        {{ time_slot }}
+                    </td>
+                    
+                    {% for day in ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'] %}
+                    <td style="padding: 12px 15px; border-bottom: 1px solid #e2e8f0; vertical-align: top; min-width: 200px;">
+                        {% for course in timetable_data %}
+                            {% if day in course.schedule_days and course.schedule_time == time_slot %}
+                            <div class="course-slot" style="background: #667eea; color: white; padding: 10px; border-radius: 8px; margin-bottom: 5px; font-size: 0.9rem;">
+                                <strong>{{ course.course_code }}</strong><br>
+                                {{ course.course_name }}<br>
+                                <small>
+                                    🏠 {{ course.room_number }}<br>
+                                    👨‍🏫 {{ course.instructor }}
+                                </small>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                    </td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div style="margin-top: 30px; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+        <div style="background: #f7fafc; padding: 20px; border-radius: 10px;">
+            <h4>📚 Registered Courses</h4>
+            <ul style="list-style: none; padding: 0; margin: 0;">
+                {% for course in timetable_data %}
+                <li style="padding: 8px 0; border-bottom: 1px solid #e2e8f0;">
+                    <strong>{{ course.course_code }}</strong> - {{ course.course_name }}<br>
+                    <small>{{ course.schedule_days }}, {{ course.schedule_time }}</small>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        
+        <div style="background: #f7fafc; padding: 20px; border-radius: 10px;">
+            <h4>ℹ Timetable Information</h4>
+            <p><strong>Total Classes:</strong> {{ timetable_data|length }}</p>
+            <p><strong>Current Semester:</strong> Fall 2024</p>
+            <p><strong>Last Updated:</strong> {{ now().strftime('%Y-%m-%d') if now else 'Today' }}</p>
+        </div>
+    </div>
+    
+    {% else %}
+    <div style="text-align: center; padding: 60px 20px; color: #718096;">
+        <div style="font-size: 4rem; margin-bottom: 20px;">📅</div>
+        <h3>No Classes Scheduled</h3>
+        <p>You haven't registered for any courses yet, or your courses don't have schedule information.</p>
+        <a href="{{ url_for('courses') }}" class="btn" style="margin-top: 20px;">Browse Courses</a>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.course-slot:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    transition: all 0.3s ease;
+}
+
+@media (max-width: 768px) {
+    table {
+        font-size: 0.8rem;
+    }
+    
+    .course-slot {
+        font-size: 0.8rem !important;
+        padding: 8px !important;
+    }
+}
+</style>
+{% endblock %}
