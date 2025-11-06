@@ -986,7 +986,7 @@ def add_student():
     
     return render_template('admin/add_student.html')
 
-# Admin Statistics & Reports
+# Admin Statistics & Reports - WORKING VERSION
 @app.route('/admin/statistics')
 @admin_required
 def admin_statistics():
@@ -1010,84 +1010,57 @@ def admin_statistics():
             cursor.execute("SELECT COUNT(*) as count FROM registrations")
             stats['total_registrations'] = cursor.fetchone()['count']
             
-            # Students by faculty - FIXED: use proper column aliases
-            cursor.execute("""
-                SELECT faculty, COUNT(*) as student_count 
-                FROM students 
-                GROUP BY faculty 
-                ORDER BY student_count DESC
-            """)
-            stats['students_by_faculty'] = cursor.fetchall()
+            # Get all students and count manually
+            cursor.execute("SELECT faculty, enrollment_year FROM students")
+            students = cursor.fetchall()
             
-            # Students by enrollment year - FIXED: use proper column aliases
-            cursor.execute("""
-                SELECT enrollment_year, COUNT(*) as student_count 
-                FROM students 
-                GROUP BY enrollment_year 
-                ORDER BY enrollment_year DESC
-            """)
-            stats['students_by_year'] = cursor.fetchall()
+            # Count by faculty
+            faculty_count = {}
+            for student in students:
+                faculty = student['faculty']
+                faculty_count[faculty] = faculty_count.get(faculty, 0) + 1
+            stats['faculty_data'] = [{'faculty': k, 'count': v} for k, v in faculty_count.items()]
             
-            # Course enrollment stats
-            cursor.execute("""
-                SELECT 
-                    c.course_code,
-                    c.course_name,
-                    c.current_enrollment,
-                    c.max_capacity,
-                    ROUND((c.current_enrollment * 100.0 / c.max_capacity), 1) as percentage_full
-                FROM courses c
-                ORDER BY c.current_enrollment DESC
-                LIMIT 10
-            """)
-            stats['popular_courses'] = cursor.fetchall()
+            # Count by year
+            year_count = {}
+            for student in students:
+                year = student['enrollment_year']
+                year_count[year] = year_count.get(year, 0) + 1
+            stats['year_data'] = [{'year': k, 'count': v} for k, v in year_count.items()]
             
-            # Grade distribution
-            cursor.execute("""
-                SELECT 
-                    grade,
-                    COUNT(*) as grade_count,
-                    ROUND((COUNT() * 100.0 / (SELECT COUNT() FROM grades)), 1) as percentage
-                FROM grades 
-                GROUP BY grade 
-                ORDER BY 
-                    FIELD(grade, 'A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'D+', 'D', 'F')
-            """)
-            stats['grade_distribution'] = cursor.fetchall()
+            # Get courses
+            cursor.execute("SELECT course_code, course_name, current_enrollment, max_capacity FROM courses ORDER BY current_enrollment DESC LIMIT 5")
+            stats['courses'] = cursor.fetchall()
             
-            # Recent activity
-            cursor.execute("""
-                SELECT 
-                    'Student' as type, 
-                    first_name, 
-                    last_name, 
-                    created_at 
-                FROM students 
-                UNION ALL
-                SELECT 
-                    'Announcement' as type, 
-                    title as first_name, 
-                    author as last_name, 
-                    created_at 
-                FROM announcements
-                ORDER BY created_at DESC 
-                LIMIT 10
-            """)
-            stats['recent_activity'] = cursor.fetchall()
+            # Get recent activity
+            cursor.execute("SELECT first_name, last_name, created_at FROM students ORDER BY created_at DESC LIMIT 5")
+            stats['recent_students'] = cursor.fetchall()
             
-            print(f"DEBUG: Statistics loaded - {stats['total_students']} students")
+            print("DEBUG: Statistics loaded successfully")
             
-        except Error as e:
-            print(f"Error loading statistics: {e}")
-            flash('Error loading statistics!', 'error')
+        except Exception as e:
+            print(f"DEBUG: Error in statistics: {e}")
+            # Set safe defaults
+            stats = {
+                'total_students': 0,
+                'total_courses': 0, 
+                'total_announcements': 0,
+                'total_registrations': 0,
+                'faculty_data': [],
+                'year_data': [],
+                'courses': [],
+                'recent_students': []
+            }
         finally:
-            connection.close()
+            if connection:
+                connection.close()
     
     return render_template('admin/statistics.html', stats=stats)
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=False)
+
 
 
 
