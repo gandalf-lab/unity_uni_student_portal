@@ -41,11 +41,11 @@
                 <span style="font-weight: 600;">{{ faculty.faculty }}</span>
                 <div style="display: flex; align-items: center; gap: 15px;">
                     <span style="background: #667eea; color: white; padding: 4px 8px; border-radius: 12px; font-size: 0.8rem;">
-                        {{ faculty.count }} students
+                        {{ faculty.student_count }} students
                     </span>
                     <span style="color: #718096; font-size: 0.9rem;">
                         {% if stats.total_students > 0 %}
-                            {{ ((faculty.count * 100) / stats.total_students)|round(1) }}%
+                            {{ ((faculty.student_count * 100) / stats.total_students)|round(1) }}%
                         {% else %}
                             0%
                         {% endif %}
@@ -65,7 +65,7 @@
                 <span style="font-weight: 600;">{{ year.enrollment_year }}</span>
                 <div style="display: flex; align-items: center; gap: 15px;">
                     <span style="background: #48bb78; color: white; padding: 4px 8px; border-radius: 12px; font-size: 0.8rem;">
-                        {{ year.count }} students
+                        {{ year.student_count }} students
                     </span>
                 </div>
             </div>
@@ -131,7 +131,7 @@
                           style="padding: 4px 8px; border-radius: 6px; font-weight: bold; font-size: 0.8rem;">
                         {{ grade.grade }}
                     </span>
-                    <span style="font-weight: 600;">{{ grade.count }} students</span>
+                    <span style="font-weight: 600;">{{ grade.grade_count }} students</span>
                 </div>
                 <span style="color: #718096; font-size: 0.9rem;">
                     {{ grade.percentage }}%
