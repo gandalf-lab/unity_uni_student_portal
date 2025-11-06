@@ -1057,9 +1057,57 @@ def admin_statistics():
     
     return render_template('admin/statistics.html', stats=stats)
 
+# Add Course - Admin
+@app.route('/admin/courses/add', methods=['GET', 'POST'])
+@admin_required
+def add_course():
+    if request.method == 'POST':
+        course_code = request.form['course_code'].strip().upper()
+        course_name = request.form['course_name']
+        instructor = request.form['instructor']
+        program = request.form['program']
+        schedule_days = request.form['schedule_days']
+        schedule_time = request.form['schedule_time']
+        credits = request.form['credits']
+        max_capacity = request.form['max_capacity']
+        description = request.form.get('description', '')
+        
+        connection = get_db_connection()
+        if connection:
+            try:
+                cursor = connection.cursor()
+                
+                # Check if course code already exists
+                cursor.execute("SELECT id FROM courses WHERE course_code = %s", (course_code,))
+                if cursor.fetchone():
+                    flash('This course code already exists!', 'error')
+                    return render_template('admin/add_course.html')
+                
+                # Insert new course
+                cursor.execute(
+                    """INSERT INTO courses 
+                    (course_code, course_name, instructor, program, schedule_days, schedule_time, credits, max_capacity, description, current_enrollment) 
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+                    (course_code, course_name, instructor, program, schedule_days, schedule_time, credits, max_capacity, description, 0)
+                )
+                connection.commit()
+                
+                flash(f'Course {course_code} - {course_name} added successfully!', 'success')
+                return redirect(url_for('admin_courses'))
+                
+            except Error as e:
+                flash(f'Error adding course: {e}', 'error')
+            finally:
+                connection.close()
+        else:
+            flash('Database connection error!', 'error')
+    
+    return render_template('admin/add_course.html')
+
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=False)
+
 
 
 
