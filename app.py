@@ -995,33 +995,33 @@ def admin_statistics():
     
     if connection:
         try:
-            cursor = connection.cursor()
+            cursor = connection.cursor(dictionary=True)
             
             # Basic counts
-            cursor.execute("SELECT COUNT(*) FROM students")
-            stats['total_students'] = cursor.fetchone()[0]
+            cursor.execute("SELECT COUNT(*) as count FROM students")
+            stats['total_students'] = cursor.fetchone()['count']
             
-            cursor.execute("SELECT COUNT(*) FROM courses")
-            stats['total_courses'] = cursor.fetchone()[0]
+            cursor.execute("SELECT COUNT(*) as count FROM courses")
+            stats['total_courses'] = cursor.fetchone()['count']
             
-            cursor.execute("SELECT COUNT(*) FROM announcements")
-            stats['total_announcements'] = cursor.fetchone()[0]
+            cursor.execute("SELECT COUNT(*) as count FROM announcements")
+            stats['total_announcements'] = cursor.fetchone()['count']
             
-            cursor.execute("SELECT COUNT(*) FROM registrations")
-            stats['total_registrations'] = cursor.fetchone()[0]
+            cursor.execute("SELECT COUNT(*) as count FROM registrations")
+            stats['total_registrations'] = cursor.fetchone()['count']
             
-            # Students by faculty
+            # Students by faculty - FIXED: use proper column aliases
             cursor.execute("""
-                SELECT faculty, COUNT(*) as count 
+                SELECT faculty, COUNT(*) as student_count 
                 FROM students 
                 GROUP BY faculty 
-                ORDER BY count DESC
+                ORDER BY student_count DESC
             """)
             stats['students_by_faculty'] = cursor.fetchall()
             
-            # Students by enrollment year
+            # Students by enrollment year - FIXED: use proper column aliases
             cursor.execute("""
-                SELECT enrollment_year, COUNT(*) as count 
+                SELECT enrollment_year, COUNT(*) as student_count 
                 FROM students 
                 GROUP BY enrollment_year 
                 ORDER BY enrollment_year DESC
@@ -1046,8 +1046,8 @@ def admin_statistics():
             cursor.execute("""
                 SELECT 
                     grade,
-                    COUNT(*) as count,
-                    ROUND((COUNT(*) * 100.0 / (SELECT COUNT(*) FROM grades)), 1) as percentage
+                    COUNT(*) as grade_count,
+                    ROUND((COUNT() * 100.0 / (SELECT COUNT() FROM grades)), 1) as percentage
                 FROM grades 
                 GROUP BY grade 
                 ORDER BY 
@@ -1075,6 +1075,8 @@ def admin_statistics():
             """)
             stats['recent_activity'] = cursor.fetchall()
             
+            print(f"DEBUG: Statistics loaded - {stats['total_students']} students")
+            
         except Error as e:
             print(f"Error loading statistics: {e}")
             flash('Error loading statistics!', 'error')
@@ -1083,10 +1085,10 @@ def admin_statistics():
     
     return render_template('admin/statistics.html', stats=stats)
 
-
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=False)
+
 
 
 
