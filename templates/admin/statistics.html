@@ -44,7 +44,11 @@
                         {{ faculty.count }} students
                     </span>
                     <span style="color: #718096; font-size: 0.9rem;">
-                        {{ ((faculty.count * 100) / stats.total_students)|round(1) }}%
+                        {% if stats.total_students > 0 %}
+                            {{ ((faculty.count * 100) / stats.total_students)|round(1) }}%
+                        {% else %}
+                            0%
+                        {% endif %}
                     </span>
                 </div>
             </div>
@@ -98,8 +102,13 @@
                     </td>
                     <td style="padding: 12px 15px; text-align: center;">
                         {% set percentage = course.percentage_full %}
-                        <span style="background: {% if percentage > 90 %}#f56565{% elif percentage > 70 %}#ed8936{% else %}#48bb78{% endif %}; 
-                              color: white; padding: 4px 8px; border-radius: 12px; font-size: 0.8rem;">
+                        {% if percentage > 90 %}
+                            <span style="background: #f56565; color: white; padding: 4px 8px; border-radius: 12px; font-size: 0.8rem;">
+                        {% elif percentage > 70 %}
+                            <span style="background: #ed8936; color: white; padding: 4px 8px; border-radius: 12px; font-size: 0.8rem;">
+                        {% else %}
+                            <span style="background: #48bb78; color: white; padding: 4px 8px; border-radius: 12px; font-size: 0.8rem;">
+                        {% endif %}
                             {{ percentage }}%
                         </span>
                     </td>
@@ -175,7 +184,7 @@
             🎓 Export Grade Report
         </button>
         <button class="btn secondary" onclick="window.print()">
-            🖨️ Print This Report
+            🖨 Print This Report
         </button>
     </div>
 </div>
