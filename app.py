@@ -54,9 +54,8 @@ def get_majors_by_faculty(faculty):
                 'Human Resources', 'International Business', 'Management', 'Entrepreneurship'],
         'FENG': ['Electrical Engineering', 'Mechanical Engineering', 'Civil Engineering', 
                 'Chemical Engineering', 'Industrial Engineering', 'Biomedical Engineering'],
-        'FMED': ['Medicine', 'Nursing', 'Pharmacy', 'Dentistry', 'Public Health'],
-        'FSCI': ['Biology', 'Chemistry', 'Physics', 'Mathematics', 
-                'Environmental Science', 'Biotechnology'],
+        'FMED': ['Nursing', 'midwifery', 'Pharmacy', 'Nutrition', 'Public Health', 'Medical laborotary'],
+        'FSCI': ['Social work', 'Public administration', 'International relationship', 'Development study', 'Political science'],
         'FART': ['Psychology', 'Sociology', 'English Literature', 'History', 
                 'Political Science', 'International Relations'],
         'FLAW': ['Law', 'Criminal Justice'],
@@ -1184,6 +1183,7 @@ def edit_student(student_id):
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=False)
+
 
 
 
