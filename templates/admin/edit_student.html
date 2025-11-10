@@ -1,0 +1,132 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Edit Student{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>✏ Edit Student</h2>
+    <p>Update student information for: <strong>{{ student.first_name }} {{ student.last_name }}</strong></p>
+</div>
+
+<div class="card">
+    <form method="POST" id="editStudentForm">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div class="form-group">
+                <label>🎓 University ID *</label>
+                <input type="text" name="university_id" value="{{ student.university_id }}" required readonly style="background-color: #f7fafc;">
+                <small style="color: #718096;">University ID cannot be changed</small>
+            </div>
+            
+            <div class="form-group">
+                <label>🎓 Faculty *</label>
+                <select name="faculty" required>
+                    <option value="">Select Faculty</option>
+                    <option value="FCIT" {% if student.faculty == 'FCIT' %}selected{% endif %}>Faculty of Computer & IT</option>
+                    <option value="FBBA" {% if student.faculty == 'FBBA' %}selected{% endif %}>Faculty of Business</option>
+                    <option value="FENG" {% if student.faculty == 'FENG' %}selected{% endif %}>Faculty of Engineering</option>
+                    <option value="FMED" {% if student.faculty == 'FMED' %}selected{% endif %}>Faculty of Medicine</option>
+                    <option value="FSCI" {% if student.faculty == 'FSCI' %}selected{% endif %}>Faculty of Science</option>
+                    <option value="FART" {% if student.faculty == 'FART' %}selected{% endif %}>Faculty of Arts</option>
+                    <option value="FLAW" {% if student.faculty == 'FLAW' %}selected{% endif %}>Faculty of Law</option>
+                    <option value="FEDU" {% if student.faculty == 'FEDU' %}selected{% endif %}>Faculty of Education</option>
+                </select>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div class="form-group">
+                <label>👤 First Name *</label>
+                <input type="text" name="first_name" value="{{ student.first_name }}" placeholder="First Name" required>
+            </div>
+            
+            <div class="form-group">
+                <label>👤 Last Name *</label>
+                <input type="text" name="last_name" value="{{ student.last_name }}" placeholder="Last Name" required>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div class="form-group">
+                <label>📧 Email Address *</label>
+                <input type="email" name="email" value="{{ student.email }}" placeholder="student@university.edu" required>
+            </div>
+            
+            <div class="form-group">
+                <label>📞 Phone Number *</label>
+                <input type="tel" name="phone_number" value="{{ student.phone_number }}" placeholder="+1234567890" required>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div class="form-group">
+                <label>🎯 Major/Program *</label>
+                <select name="major" required>
+                    <option value="">Select Major</option>
+                    <optgroup label="Computer & IT">
+                        <option value="Computer Science" {% if student.major == 'Computer Science' %}selected{% endif %}>Computer Science</option>
+                        <option value="Information Technology" {% if student.major == 'Information Technology' %}selected{% endif %}>Information Technology</option>
+                        <option value="Software Engineering" {% if student.major == 'Software Engineering' %}selected{% endif %}>Software Engineering</option>
+                        <option value="Cybersecurity" {% if student.major == 'Cybersecurity' %}selected{% endif %}>Cybersecurity</option>
+                        <option value="Data Science" {% if student.major == 'Data Science' %}selected{% endif %}>Data Science</option>
+                        <option value="Artificial Intelligence" {% if student.major == 'Artificial Intelligence' %}selected{% endif %}>Artificial Intelligence</option>
+                    </optgroup>
+                    <optgroup label="Business">
+                        <option value="Business Administration" {% if student.major == 'Business Administration' %}selected{% endif %}>Business Administration</option>
+                        <option value="Accounting" {% if student.major == 'Accounting' %}selected{% endif %}>Accounting</option>
+                        <option value="Finance" {% if student.major == 'Finance' %}selected{% endif %}>Finance</option>
+                        <option value="Marketing" {% if student.major == 'Marketing' %}selected{% endif %}>Marketing</option>
+                    </optgroup>
+                    <optgroup label="Engineering">
+                        <option value="Electrical Engineering" {% if student.major == 'Electrical Engineering' %}selected{% endif %}>Electrical Engineering</option>
+                        <option value="Mechanical Engineering" {% if student.major == 'Mechanical Engineering' %}selected{% endif %}>Mechanical Engineering</option>
+                        <option value="Civil Engineering" {% if student.major == 'Civil Engineering' %}selected{% endif %}>Civil Engineering</option>
+                    </optgroup>
+                    <optgroup label="Science">
+                        <option value="Biology" {% if student.major == 'Biology' %}selected{% endif %}>Biology</option>
+                        <option value="Chemistry" {% if student.major == 'Chemistry' %}selected{% endif %}>Chemistry</option>
+                        <option value="Physics" {% if student.major == 'Physics' %}selected{% endif %}>Physics</option>
+                        <option value="Mathematics" {% if student.major == 'Mathematics' %}selected{% endif %}>Mathematics</option>
+                    </optgroup>
+                    <optgroup label="Arts & Humanities">
+                        <option value="Psychology" {% if student.major == 'Psychology' %}selected{% endif %}>Psychology</option>
+                        <option value="Sociology" {% if student.major == 'Sociology' %}selected{% endif %}>Sociology</option>
+                        <option value="English Literature" {% if student.major == 'English Literature' %}selected{% endif %}>English Literature</option>
+                        <option value="History" {% if student.major == 'History' %}selected{% endif %}>History</option>
+                    </optgroup>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>📅 Enrollment Year *</label>
+                <input type="number" name="enrollment_year" value="{{ student.enrollment_year }}" placeholder="2024" min="2000" max="2030" required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>🔒 Reset Password</label>
+            <input type="password" name="password" placeholder="Leave blank to keep current password">
+            <small style="color: #718096;">Only enter if you want to change the password</small>
+        </div>
+
+        <div style="display: flex; gap: 15px; margin-top: 25px;">
+            <button type="submit" class="btn">💾 Update Student</button>
+            <a href="{{ url_for('admin_students') }}" class="btn secondary">← Back to Students</a>
+        </div>
+    </form>
+</div>
+
+<script>
+// Phone number validation
+document.getElementById('editStudentForm').addEventListener('submit', function(e) {
+    const phoneInput = document.querySelector('input[name="phone_number"]');
+    const phone = phoneInput.value.trim();
+    const phoneRegex = /^\+?1?\d{9,15}$/;
+    
+    if (!phoneRegex.test(phone)) {
+        e.preventDefault();
+        alert('Please enter a valid phone number (9-15 digits, optional + prefix)');
+        phoneInput.focus();
+    }
+});
+</script>
+{% endblock %}
