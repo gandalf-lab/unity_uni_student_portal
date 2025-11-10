@@ -1104,9 +1104,87 @@ def add_course():
     
     return render_template('admin/add_course.html')
 
+# Edit Student - Admin
+@app.route('/admin/students/edit/<int:student_id>', methods=['GET', 'POST'])
+@admin_required
+def edit_student(student_id):
+    connection = get_db_connection()
+    if connection:
+        try:
+            cursor = connection.cursor(dictionary=True)
+            
+            if request.method == 'POST':
+                # Get form data
+                faculty = request.form['faculty']
+                first_name = request.form['first_name']
+                last_name = request.form['last_name']
+                email = request.form['email']
+                phone_number = request.form['phone_number']
+                major = request.form['major']
+                enrollment_year = request.form['enrollment_year']
+                password = request.form.get('password')
+                
+                # Basic validation
+                if not validate_phone_number(phone_number):
+                    flash('Please enter a valid phone number!', 'error')
+                    return render_template('admin/edit_student.html', student={'id': student_id})
+                
+                # Check if email already exists (excluding current student)
+                cursor.execute("SELECT id FROM students WHERE email = %s AND id != %s", (email, student_id))
+                if cursor.fetchone():
+                    flash('This email address is already registered to another student!', 'error')
+                    return render_template('admin/edit_student.html', student={'id': student_id})
+                
+                # Update student information
+                if password:
+                    # If password is provided, hash and update it
+                    hashed_password = hash_password(password)
+                    cursor.execute(
+                        """UPDATE students SET 
+                        faculty = %s, first_name = %s, last_name = %s, email = %s, 
+                        phone_number = %s, major = %s, enrollment_year = %s, password = %s
+                        WHERE id = %s""",
+                        (faculty, first_name, last_name, email, phone_number, major, enrollment_year, hashed_password, student_id)
+                    )
+                else:
+                    # Update without changing password
+                    cursor.execute(
+                        """UPDATE students SET 
+                        faculty = %s, first_name = %s, last_name = %s, email = %s, 
+                        phone_number = %s, major = %s, enrollment_year = %s
+                        WHERE id = %s""",
+                        (faculty, first_name, last_name, email, phone_number, major, enrollment_year, student_id)
+                    )
+                
+                connection.commit()
+                flash(f'Student {first_name} {last_name} updated successfully!', 'success')
+                return redirect(url_for('admin_students'))
+            
+            else:
+                # GET request - load student data
+                cursor.execute("SELECT * FROM students WHERE id = %s", (student_id,))
+                student = cursor.fetchone()
+                
+                if student:
+                    return render_template('admin/edit_student.html', student=student)
+                else:
+                    flash('Student not found!', 'error')
+                    return redirect(url_for('admin_students'))
+                
+        except Error as e:
+            flash(f'Error updating student: {e}', 'error')
+            print(f"Database error: {e}")
+        finally:
+            connection.close()
+    else:
+        flash('Database connection error!', 'error')
+    
+    return redirect(url_for('admin_students'))
+
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=False)
+
 
 
 
